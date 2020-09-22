@@ -14,5 +14,5 @@ client = commands.Bot(command_prefix = 'bw!')
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
-
+#token
 client.run(TOKEN)
