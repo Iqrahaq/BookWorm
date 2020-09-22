@@ -50,5 +50,5 @@ async def help(ctx):
     embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds', inline=False)
     await ctx.send(embed=embed)
 
-
+#token
 client.run(TOKEN)
