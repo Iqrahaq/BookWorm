@@ -48,7 +48,6 @@ async def help(ctx):
     embed.set_author(name='Help : list of commands available')
     embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds', inline=False)
     embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds', inline=False)
-    embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds', inline=False)
     await ctx.send(embed=embed)
 
 
