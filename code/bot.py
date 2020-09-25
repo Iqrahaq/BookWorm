@@ -33,7 +33,7 @@ async def quote(ctx):
         responses = quotes
         random.seed(a=None)
         response = random.choice(responses)
-    await ctx.send(response)
+    await ctx.send(response["text"] + ' - ' + response["author"])
 
 # Error checking...
 @client.event
