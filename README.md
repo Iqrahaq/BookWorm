@@ -48,12 +48,13 @@ Blah.
 **Iqra Haq** - Student @ Northumbria University, Newcastle upon Tyne, UK.
 
 ## Credits
-Blah.
+**joezhuang** - Vector Designer @ Vecteezy (
+<a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
 
 ## Acknowledgments
-**joezhuang** - Vector Designer @ Vecteezy (
-<a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
+**The Rainbow Mosque** - For inspiring me to create this bot.
+
