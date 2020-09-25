@@ -61,5 +61,5 @@ Blah.
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
 
 ## Acknowledgments
-
+**The Rainbow Mosque** - For inspiring me to create this bot.
 
