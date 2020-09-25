@@ -60,3 +60,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) f
 
 **Rudy Velthuis** -  Enthusiastic Hobby Programmer & Partial provider of quotes.txt. (
 <a href="http://rvelthuis.de/downloads.html">Rudy's Delphi Corner </a> ). 
+
+**Komlan Akpédjé KEDJI** - Co-founder @ Piamm Technologies & Partial provider of quotes.txt via (<a href="https://gist.github.com/erickedji/68802">Github</a> )
+
