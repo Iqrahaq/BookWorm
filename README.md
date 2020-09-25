@@ -57,5 +57,6 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) f
 ## Acknowledgments
 **joezhuang** - Vector Designer @ Vecteezy (
 <a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
+
 **Rudy Velthuis** -  Enthusiastic Hobby Programmer - Partial provider of quotes.txt @ (
 <a href="http://rvelthuis.de/downloads.html">Rudy's Delphi Corner </a> ). 
