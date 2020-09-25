@@ -43,7 +43,7 @@ async def on_command_error(ctx, error):
 # Remove default help command to allow for bw!help.
 client.remove_command('help')
 
-# Help list and details of commands.
+# Help list and details of commands...
 @client.command(pass_context=True)
 async def help(ctx):
     embed = discord.Embed(
