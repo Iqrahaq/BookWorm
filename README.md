@@ -48,13 +48,6 @@ Blah.
 **Iqra Haq** - Student @ Northumbria University, Newcastle upon Tyne, UK.
 
 ## Credits
-Blah.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
-
-## Acknowledgments
 **joezhuang** - Vector Designer @ Vecteezy (
 <a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
 
@@ -62,4 +55,11 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) f
 <a href="http://rvelthuis.de/downloads.html">Rudy's Delphi Corner </a> ). 
 
 **Komlan Akpédjé KEDJI** - Co-founder @ Piamm Technologies & Partial provider of quotes.txt. (<a href="https://gist.github.com/erickedji/68802"> Github</a> )
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
+
+## Acknowledgments
+
 
