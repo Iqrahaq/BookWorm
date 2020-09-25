@@ -6,11 +6,13 @@ import random
 import json
 import discord
 from discord.ext import commands
+from discord.utils import get
 from dotenv import load_dotenv
 
 # Use dotenv to conceal token.
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+ROLE = "Book Worm"
 client = commands.Bot(command_prefix = 'bw!')
 
 # Helpful loading prompt.
@@ -19,6 +21,9 @@ print("Starting bot...")
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
+
+guild = ctx.guild
+await guild.create_role(name=ROLE, colour=discord.Colour(0x00EE00))
 
 # Ping to answer with the ms latency, helpful for troubleshooting.
 @client.command()
@@ -50,7 +55,7 @@ async def getuser(ctx, role: discord.Role):
             empty = False
     if empty:
         await bot.say("Nobody has the role {}".format(role.mention))
-        
+
 
 # Error checking...
 @client.event
