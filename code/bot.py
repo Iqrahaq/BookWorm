@@ -35,6 +35,23 @@ async def quote(ctx):
         response = random.choice(responses)
     await ctx.send(response["text"] + ' - ' + response["author"])
 
+
+#Member has joined book club (via channel or bookworm tag) (inc. channel message)
+@client.command(pass_context=True)
+async def getuser(ctx, role: discord.Role):
+    role = discord.utils.get(ctz.message.server.roles, name="BookWorm")
+    if role is None:
+        await bot.say('There are no "BookWorms" in this server! ¯\\_(ツ)_/¯')
+        return
+    empty = True
+    for member in ctx.message.server.members:
+        if role in member.roles:
+            await bot.say("{0.name}: {0.id}, Welcome to Book Club!".format(member))
+            empty = False
+    if empty:
+        await bot.say("Nobody has the role {}".format(role.mention))
+        
+
 # Error checking...
 @client.event
 async def on_command_error(ctx, error):
