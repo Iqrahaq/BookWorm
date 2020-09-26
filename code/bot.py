@@ -6,6 +6,7 @@ import mysql.connector
 import random
 import json
 import isbnlib
+from isbnlib import goom
 import discord
 from discord.ext import commands
 from discord.utils import get
@@ -20,6 +21,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 ROLE = "Book Worm"
 MEMBERS = []
+CURRENT_BOOK_TITLE = []
+CURRENT_BOOK_AUTHOR = []
 BOOKS = []
 
 #DB connectivity
@@ -149,12 +152,23 @@ async def pickaworm(ctx):
 # Searches for book.
 @client.command()
 async def booksearch(ctx):
-    ctx.send('Please enter a book title: ')
+    await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
     def check(message):
-        return message.author == ctx.author and message.channel == ctx.channel
-    message = await client.wait_for("message", check=check)
-    response = goom(message)
-    ctx.send(response)
+        return message.channel == ctx.channel
+    try:
+        current_message = await client.wait_for('message', check=check, timeout=30)
+        book_results = goom(current_message.content)
+        if book_results:
+            print(book_results)
+            embed = discord.Embed(colour = discord.Colour.green(), title="Book Results")
+            for book in book_results:
+                embed.add_field(name=book['Title'], value=(str(book['Authors'])), inline=False)
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
+    except asyncio.TimeoutError as e:
+        print(e)
+        await ctx.send("Response timed out.")
 
 
 # Answers with a random quote - using quotes.json.
