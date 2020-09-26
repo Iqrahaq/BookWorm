@@ -25,7 +25,6 @@ print("Starting bot...")
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
-<<<<<<< HEAD
 ### See if you can fix this later.
 @client.event
 async def on_guild_join(guild, ctx):
@@ -33,10 +32,7 @@ async def on_guild_join(guild, ctx):
     await default_role.delete()
     await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
 
-=======
-
 # Create role AS SOON AS BOT JOINS.
->>>>>>> 9ee22c57e584be9a632d238b02281c7e143f1446
 @client.command()
 async def rolesetup(ctx):
     if get(ctx.guild.roles, name=ROLE):
