@@ -51,6 +51,8 @@ Blah.
 **joezhuang** - Vector Designer @ Vecteezy (
 <a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
 
+ **dwyl** - Quotes via ( <a href="https://github.com/dwyl/quotes">Github</a> ).
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
