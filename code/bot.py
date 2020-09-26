@@ -66,6 +66,20 @@ async def quote(ctx):
         response = random.choice(responses)
     await ctx.send(response["text"] + ' - ' + response["author"])
 
+
+
+# Returns information about bot.
+@client.command(pass_context=True)
+async def info(ctx):
+    embed = discord.Embed(colour = discord.Colour.green())
+    embed=discord.Embed(title='BookWorm (Bot)', url='https://github.com/Iqrahaq/BookWorm', description='A bot to help contribute to book club activities.', color=0x5ae000)
+    embed.set_author(name='Iqra Haq', url='https://www.iqrahaq.com')
+    embed.set_thumbnail(url='https://github.com/Iqrahaq/BookWorm/raw/master/vector/bookworm-01.png')
+    embed.add_field(name='How to use?', value='Use the "bw!help" command!')
+    await ctx.send(embed=embed)
+
+
+
 # Error checking...
 @client.event
 async def on_command_error(ctx, error):
@@ -78,8 +92,10 @@ client.remove_command('help')
 @client.command(pass_context=True)
 async def help(ctx):
     embed = discord.Embed(colour = discord.Colour.green())
-    embed.set_author(name='Help : list of commands available')
-    embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds', inline=False)
+    embed.set_author(name='Help - List of commands available: ')
+    embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds.', inline=False)
+    embed.add_field(name='bw!info', value='Returns information about the bot.', inline=False)
+    embed.add_field(name='bw!bookworms', value='Returns a list of the current book club members.', inline=False)
     embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
     await ctx.send(embed=embed)
 
