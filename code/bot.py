@@ -5,6 +5,7 @@ import os
 import mysql.connector
 import random
 import json
+import isbnlib
 import discord
 from discord.ext import commands
 from discord.utils import get
@@ -19,6 +20,7 @@ ROLE = "Book Worm"
 MEMBERS = []
 BOOKS = []
 
+#DB connectivity
 mydb = mysql.connector.connect(
     host=os.getenv('DB_HOST'),
     user=os.getenv('DB_USER'),
@@ -143,10 +145,10 @@ async def pickaworm(ctx):
     await ctx.send(embed=embed)
 
 
-# Ping to answer with the ms latency, helpful for troubleshooting.
-@client.command()
-async def ping(ctx):
-    await ctx.send(f'Pong! {round (client.latency * 1000)}ms ')
+
+
+
+
 
 # Answers with a random quote - using quotes.json.
 @client.command()
@@ -160,6 +162,9 @@ async def quote(ctx):
 
 
 
+#####   TROUBLESHOOTING AND INFORMATION ########
+
+
 # Returns information about bot.
 @client.command(pass_context=True)
 async def info(ctx):
@@ -171,7 +176,10 @@ async def info(ctx):
     embed.add_field(name='Am I new?', value='Use the "bw!botsetup" command!', inline=False)
     await ctx.send(embed=embed)
 
-
+# Ping to answer with the ms latency, helpful for troubleshooting.
+@client.command()
+async def ping(ctx):
+    await ctx.send(f'Pong! {round (client.latency * 1000)}ms ')
 
 # Error checking...
 @client.event
