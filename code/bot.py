@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 
 # Use dotenv to conceal token.
 load_dotenv()
+
+# Other variables
 TOKEN = os.getenv('DISCORD_TOKEN')
 ROLE = "Book Worm"
 MEMBERS = []
@@ -23,33 +25,42 @@ print("Starting bot...")
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
+### See if you can fix this later.
+@client.event
+async def on_guild_join(guild, ctx):
+    default_role = get(ctx.guild.roles, name="BookWorm")
+    await default_role.delete()
+    await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
+
 @client.command()
 async def rolesetup(ctx):
     if get(ctx.guild.roles, name=ROLE):
-        await ctx.send('Role: "Book Worm" already exists')
+        await ctx.send('Role: "Book Worm" already exists.\nPlease make sure you have this role assigned to join Book Club!')
     else:
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
-        await ctx.send('Role created: "Book Worm". Please make sure you have this role to join Book Club!')
+        await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
 
 
 # Check members in book club.
 @client.command(pass_context=True)
 async def bookworms(ctx):
     role = get(ctx.guild.roles, name=ROLE)
+    empty = True
     if role is None:
-        await ctx.send('There are no Book Worms in this server!')
+        await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
         return
-        empty = True
     else:
+        embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
         for member in ctx.guild.members:
             if role in member.roles:
                 MEMBERS.append('○ {} ({}).'.format(member, member.mention))
                 empty = False
-        embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)", description='\n'.join(MEMBERS))
-        await ctx.send(embed=embed)          
-    if empty:
-        await ctx.send("Nobody has the role {}".format(role.mention))
-    
+        embed.description=('\n'.join(MEMBERS))          
+    if empty == True:
+        embed.description=("Nobody has the role \"{}\"!".format(role))
+    await ctx.send(embed=embed)
+    MEMBERS[:] = []
+
 
 # Ping to answer with the ms latency, helpful for troubleshooting.
 @client.command()
