@@ -25,6 +25,8 @@ mydb = mysql.connector.connect(
     database=os.getenv('DB_DATABASE')
 )
 
+mycursor = mydb.cursor(buffered=True)
+
 # Command prefix
 client = commands.Bot(command_prefix = 'bw!')
 
@@ -35,24 +37,29 @@ print("Starting bot...")
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
-### See if you can fix this later.
-@client.event
-async def on_guild_join(guild, ctx):
-    default_role = get(ctx.guild.roles, name="BookWorm")
-    await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
 
 # Create role AS SOON AS BOT JOINS.
 @client.command()
-async def rolesetup(ctx):
+async def botsetup(ctx):
+    GUILD = ctx.guild.id
+    default_role = get(ctx.guild.roles, name="BookWorm")
+    mycursor.execute("USE {}".format(mydb.database))
+    mycursor.execute('SHOW TABLES')
+    all_tables = mycursor.fetchall()
+    for table in all_tables:
+        if table is not GUILD or all_tables is empty:
+            mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id INT(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
+            mydb.commit()
+    
     if get(ctx.guild.roles, name=ROLE):
         await ctx.send('Role: "Book Worm" already exists.\nPlease make sure you have this role assigned to join Book Club!')
     else:
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
         await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
 
+
 @client.command()
 async def members(ctx):
-    mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM members")
     myresult = mycursor.fetchall()
     for x in myresult:
@@ -61,7 +68,6 @@ async def members(ctx):
 # Check members in book club.
 @client.command(pass_context=True)
 async def bookworms(ctx):
-    mycursor = mydb.cursor()
     empty = True
     role = get(ctx.guild.roles, name=ROLE)
     if role is None:
@@ -69,19 +75,19 @@ async def bookworms(ctx):
         return
     else:
         for member in ctx.guild.members:
-            check_member_sql = 'SELECT * FROM members WHERE member_name=%s AND member_tag=%s'
+            check_member_sql = 'SELECT * FROM GUILD_{} WHERE member_name=%s AND member_tag=%s'.format(ctx.guild.id)
             val = (str(member), str(member.mention))
             mycursor.execute(check_member_sql, val)
             members_check = mycursor.fetchall()
             if role in member.roles:
                 if not members_check:
-                    new_member_sql = "INSERT INTO members (member_name, member_tag) VALUES (%s, %s)"
+                    new_member_sql = 'INSERT INTO GUILD_{} (member_name, member_tag) VALUES (%s, %s)'.format(ctx.guild.id)
                     mycursor.execute(new_member_sql, val)
                     mydb.commit()
                 else:
                     empty = False
             else:
-                check_member_sql = 'DELETE FROM members WHERE member_name=%s AND member_tag=%s'
+                check_member_sql = 'DELETE FROM GUILD_{} WHERE member_name=%s AND member_tag=%s'.format(ctx.guild.id)
                 val = (str(member), str(member.mention))
                 mycursor.execute(check_member_sql, val)
                 mydb.commit()
@@ -89,7 +95,7 @@ async def bookworms(ctx):
         embed.description=("Nobody has the role \"{}\"!".format(role))
 
     embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
-    all_members_sql = "SELECT * FROM members"
+    all_members_sql = 'SELECT * FROM GUILD_{}'.format(ctx.guild.id)
     mycursor.execute(all_members_sql)
     all_members = mycursor.fetchall()
     for result in all_members:
@@ -149,6 +155,7 @@ async def info(ctx):
     embed.set_author(name='Iqra Haq', url='https://www.iqrahaq.com')
     embed.set_thumbnail(url='https://github.com/Iqrahaq/BookWorm/raw/master/vector/bookworm-01.png')
     embed.add_field(name='How to use?', value='Use the "bw!help" command!')
+    embed.add_field(name='Am I new?', value='Use the "bw!botsetup" command!')
     await ctx.send(embed=embed)
 
 
