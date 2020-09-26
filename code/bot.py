@@ -2,6 +2,7 @@
 
 # Include relevant libraries.
 import os
+import mysql.connector
 import random
 import json
 import discord
@@ -15,7 +16,17 @@ load_dotenv()
 # Other variables
 TOKEN = os.getenv('DISCORD_TOKEN')
 ROLE = "Book Worm"
-MEMBERS = []
+MEMBERS = [[], [0]]
+BOOKS = []
+
+mydb = mysql.connector.connect(
+    host=os.getenv('DB_HOST'),
+    user=os.getenv('DB_USER'),
+    password=os.getenv('DB_PASSWORD'),
+    database=os.getenv('DB_DATABASE')
+)
+
+# Command prefix
 client = commands.Bot(command_prefix = 'bw!')
 
 # Helpful loading prompt.
@@ -41,12 +52,20 @@ async def rolesetup(ctx):
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
         await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
 
+@client.command()
+async def members(ctx):
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT * FROM members")
+    myresult = mycursor.fetchall()
+    for x in myresult:
+        await ctx.send(x)
 
 # Check members in book club.
 @client.command(pass_context=True)
 async def bookworms(ctx):
-    role = get(ctx.guild.roles, name=ROLE)
     empty = True
+    MEMBERS[:] = []
+    role = get(ctx.guild.roles, name=ROLE)
     if role is None:
         await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
         return
@@ -54,13 +73,37 @@ async def bookworms(ctx):
         embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
         for member in ctx.guild.members:
             if role in member.roles:
-                MEMBERS.append('○ {} ({}).'.format(member, member.mention))
-                empty = False
-        embed.description=('\n'.join(MEMBERS))          
+                if ('○ {} ({}).'.format(member, member.mention)) not in MEMBERS:
+                    MEMBERS.append('○ {} ({}).- 📚: {}'.format(member, member.mention, ))
+                    empty = False
+        embed.description=('\n'.join(MEMBERS[0]))
     if empty == True:
         embed.description=("Nobody has the role \"{}\"!".format(role))
     await ctx.send(embed=embed)
+
+# Picks random book club member.
+@client.command()
+async def pickaworm(ctx):
+    empty = True
     MEMBERS[:] = []
+    role = get(ctx.guild.roles, name=ROLE)
+    if role is None:
+        await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
+        return
+    else:
+        embed = discord.Embed(colour = discord.Colour.green(), title="Random Book Worm Chosen:")
+        for member in ctx.guild.members:
+            if role in member.roles:
+                if ('○ {} ({}).'.format(member, member.mention)) not in MEMBERS:
+                    MEMBERS[0].append('○ {} ({}).'.format(member, member.mention))
+                    empty = False
+    if empty == True:
+        embed.description=("Nobody has the role \"{}\"!".format(role))
+
+    random.seed(a=None)
+    response = random.choice(MEMBERS)
+    embed.description=(response)
+    await ctx.send(embed=embed)
 
 
 # Ping to answer with the ms latency, helpful for troubleshooting.
