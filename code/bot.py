@@ -10,6 +10,8 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 from dotenv import load_dotenv
+import asyncio
+
 
 # Use dotenv to conceal token.
 load_dotenv()
@@ -41,7 +43,6 @@ async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
 
-# Create role AS SOON AS BOT JOINS.
 @client.command()
 async def botsetup(ctx):
     GUILD = ctx.guild.id
@@ -145,9 +146,15 @@ async def pickaworm(ctx):
     await ctx.send(embed=embed)
 
 
-
-
-
+# Searches for book.
+@client.command()
+async def booksearch(ctx):
+    ctx.send('Please enter a book title: ')
+    def check(message):
+        return message.author == ctx.author and message.channel == ctx.channel
+    message = await client.wait_for("message", check=check)
+    response = goom(message)
+    ctx.send(response)
 
 
 # Answers with a random quote - using quotes.json.
