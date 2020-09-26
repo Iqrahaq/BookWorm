@@ -68,29 +68,35 @@ async def bookworms(ctx):
         await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
         return
     else:
-        embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
         for member in ctx.guild.members:
+            check_member_sql = 'SELECT * FROM members WHERE member_name=%s AND member_tag=%s'
+            val = (str(member), str(member.mention))
+            mycursor.execute(check_member_sql, val)
+            members_check = mycursor.fetchall()
             if role in member.roles:
-                check_member_sql = 'SELECT * FROM members WHERE member_name=%s AND member_tag=%s'
-                val = (str(member), member.mention)
-                mycursor.execute(check_member_sql, val)
-                members_check = mycursor.fetchall()
                 if not members_check:
                     new_member_sql = "INSERT INTO members (member_name, member_tag) VALUES (%s, %s)"
                     mycursor.execute(new_member_sql, val)
                     mydb.commit()
                 else:
                     empty = False
-        all_members_sql = "SELECT * FROM members"
-        mycursor.execute(all_members_sql)
-        all_members = mycursor.fetchall()
-        for result in all_members:
-            var_member_name = result[2].decode()
-            var_member_tag = result[3].decode()
-            var_member_count = result[4]
-            embed.description=('○ {} ({}).- 📚: {}\n'.format(var_member_name, var_member_tag, var_member_count))
+            else:
+                check_member_sql = 'DELETE FROM members WHERE member_name=%s AND member_tag=%s'
+                val = (str(member), str(member.mention))
+                mycursor.execute(check_member_sql, val)
+                mydb.commit()
     if empty == True:
         embed.description=("Nobody has the role \"{}\"!".format(role))
+
+    embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
+    all_members_sql = "SELECT * FROM members"
+    mycursor.execute(all_members_sql)
+    all_members = mycursor.fetchall()
+    for result in all_members:
+        var_member_name = result[2].decode()
+        var_member_tag = result[3].decode()
+        var_member_count = result[4]
+        embed.add_field(name='○ {}'.format(var_member_name), value='({})\n 📚: {}\n\n'.format(var_member_tag, var_member_count), inline=False)
     await ctx.send(embed=embed)
 
 # Picks random book club member.
