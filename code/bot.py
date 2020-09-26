@@ -16,7 +16,6 @@ load_dotenv()
 # Other variables
 TOKEN = os.getenv('DISCORD_TOKEN')
 ROLE = "Book Worm"
-MEMBERS = [[], [0]]
 BOOKS = []
 
 mydb = mysql.connector.connect(
@@ -40,7 +39,6 @@ async def on_ready():
 @client.event
 async def on_guild_join(guild, ctx):
     default_role = get(ctx.guild.roles, name="BookWorm")
-    await default_role.delete()
     await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
 
 # Create role AS SOON AS BOT JOINS.
@@ -63,8 +61,8 @@ async def members(ctx):
 # Check members in book club.
 @client.command(pass_context=True)
 async def bookworms(ctx):
+    mycursor = mydb.cursor()
     empty = True
-    MEMBERS[:] = []
     role = get(ctx.guild.roles, name=ROLE)
     if role is None:
         await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
@@ -73,10 +71,24 @@ async def bookworms(ctx):
         embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
         for member in ctx.guild.members:
             if role in member.roles:
-                if ('○ {} ({}).'.format(member, member.mention)) not in MEMBERS:
-                    MEMBERS.append('○ {} ({}).- 📚: {}'.format(member, member.mention, ))
+                check_member_sql = 'SELECT * FROM members WHERE member_name=%s AND member_tag=%s'
+                val = (str(member), member.mention)
+                mycursor.execute(check_member_sql, val)
+                members_check = mycursor.fetchall()
+                if not members_check:
+                    new_member_sql = "INSERT INTO members (member_name, member_tag) VALUES (%s, %s)"
+                    mycursor.execute(new_member_sql, val)
+                    mydb.commit()
+                else:
                     empty = False
-        embed.description=('\n'.join(MEMBERS[0]))
+        all_members_sql = "SELECT * FROM members"
+        mycursor.execute(all_members_sql)
+        all_members = mycursor.fetchall()
+        for result in all_members:
+            var_member_name = result[2].decode()
+            var_member_tag = result[3].decode()
+            var_member_count = result[4]
+            embed.description=('○ {} ({}).- 📚: {}\n'.format(var_member_name, var_member_tag, var_member_count))
     if empty == True:
         embed.description=("Nobody has the role \"{}\"!".format(role))
     await ctx.send(embed=embed)
