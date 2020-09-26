@@ -23,6 +23,8 @@ print("Starting bot...")
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
+
+# Create role AS SOON AS BOT JOINS.
 @client.command()
 async def rolesetup(ctx):
     if get(ctx.guild.roles, name=ROLE):
