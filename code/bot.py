@@ -23,6 +23,7 @@ ROLE = "Book Worm"
 MEMBERS = []
 CURRENT_BOOK_TITLE = []
 CURRENT_BOOK_AUTHOR = []
+BOOK_RESULTS_COUNT = []
 BOOKS = []
 
 #DB connectivity
@@ -162,7 +163,7 @@ async def booksearch(ctx):
             print(book_results)
             embed = discord.Embed(colour = discord.Colour.green(), title="Book Results")
             for book in book_results:
-                embed.add_field(name=book['Title'], value=(str(book['Authors'])), inline=False)
+                embed.add_field(name='{} ({})'.format(book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
             await ctx.send(embed=embed)
         else:
             await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
