@@ -90,8 +90,8 @@ async def bookworms(ctx):
         return
     else:
         for member in ctx.guild.members:
-            check_member_sql = 'SELECT * FROM GUILD_{} WHERE member_name=%s AND member_tag=%s'.format(ctx.guild.id)
-            val = (str(member), str(member.mention))
+            check_member_sql = 'SELECT * FROM GUILD_{} WHERE member_tag=%s'.format(ctx.guild.id)
+            val = (str(member.mention))
             mycursor.execute(check_member_sql, val)
             members_check = mycursor.fetchall()
             if role in member.roles:
@@ -104,8 +104,8 @@ async def bookworms(ctx):
                 else:
                     empty = False
             else:
-                check_member_sql = 'DELETE FROM GUILD_{} WHERE member_name=%s AND member_tag=%s'.format(ctx.guild.id)
-                val = (str(member), str(member.mention))
+                check_member_sql = 'DELETE FROM GUILD_{} WHERE member_tag=%s'.format(ctx.guild.id)
+                val = (str(member.mention))
                 mycursor.execute(check_member_sql, val)
                 mydb.commit()
     if empty == True:
