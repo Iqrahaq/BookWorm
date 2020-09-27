@@ -236,9 +236,7 @@ async def setbook(ctx):
 
 		embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
 		CHOSEN_BOOK = meta(BOOKS_RESULTS[BOOK_CHOICE])
-		print(CHOSEN_BOOK)
-		print(len(CHOSEN_BOOK['Authors']))
-		if NO_AUTHORS == True:
+		if len(CHOSEN_BOOK['Authors']) == 0:
 			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified', inline=False)
 		else:
 			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
@@ -253,20 +251,17 @@ async def setbook(ctx):
 # Return current book club reading status.
 @client.command()
 async def status(ctx):
-	current_book_sql = 'SELECT * FROM guilds WHERE guild_id=%s'
-	val = (str(ctx.guild.id))
-	mycursor.execute(current_book_sql, val)
-	current_book = mycursor.fetchall()
+	current_book_sql = 'SELECT current_book FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
+	mycursor.execute(current_book_sql)
+	current_book = str(mycursor.fetchone())
 
-	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Current Read:".format(ctx))
+	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
 	CHOSEN_BOOK = meta(current_book)
-	print(CHOSEN_BOOK)
-	print(len(CHOSEN_BOOK['Authors']))
-	if NO_AUTHORS == True:
+	if len(CHOSEN_BOOK['Authors']) == 0:
 		embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified', inline=False)
 	else:
 		embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
-	thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
+	thumbnail = cover(current_book)
 	embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
 	await ctx.send(embed=embed)
 
