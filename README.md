@@ -44,6 +44,11 @@
 <p align="center"> As this project is still under construction, no details have been provided. </p>
 ```
 
+## Features
+
+<p align="center"> As this project is still under construction, no details have been provided. </p>
+
+
 ## Authors
 **Iqra Haq** - Student @ Northumbria University, Newcastle upon Tyne, UK.
 
