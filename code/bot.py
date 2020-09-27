@@ -104,32 +104,32 @@ async def bookworms(ctx):
 		return
 	else:
 		for member in ctx.guild.members:
-			val = (str(ctx.guild.id), str(member.mention),)
+			val = (ctx.guild.id, str(member.mention),)
 			mycursor.execute("SELECT * FROM GUILD_%s WHERE member_tag=%s", val)
 			members_check = mycursor.fetchall()
 			if role in member.roles:
 				if not members_check:
-					val = (str(ctx.guild.id), str(ctx.guild.id), str(member), str(member.mention),)
+					val = (ctx.guild.id, str(ctx.guild.id), str(member), str(member.mention),)
 					mycursor.execute("INSERT INTO GUILD_%s (guild_id, member_name, member_tag) VALUES (%s, %s, %s)", val)
 					conn.commit()
 					empty = False
 				else:
 					empty = False
 			else:
-				val = (str(ctx.guild.id), str(member.mention),)
+				val = (ctx.guild.id, str(member.mention),)
 				mycursor.execute("DELETE FROM GUILD_%s WHERE member_tag=%s", val)
 				conn.commit()
 	if empty == True:
 		await ctx.send("Nobody has the role \"{}\"!".format(role))
 
 	embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
-	val = (str(ctx.guild.id),)
+	val = (ctx.guild.id,)
 	mycursor.execute("SELECT * FROM GUILD_%s", val)
 	all_members = mycursor.fetchall()
 	for result in all_members:
 		var_member_name = result[2].decode()
 		var_member_tag = result[3].decode()
-		var_member_count = result[4]
+		var_member_count = result[5]
 		embed.add_field(name='○ {}'.format(var_member_name), value='({})\n 📚: {}\n\n'.format(var_member_tag, var_member_count), inline=False)
 	await ctx.send(embed=embed)
 	
