@@ -25,7 +25,6 @@ MEMBERS = []
 BOOKS_RESULTS = []
 
 #DB connectivity
-
 def create_connection():
 	conn = None
 	try:
@@ -251,6 +250,7 @@ async def setbook(ctx):
 		embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
 		embed.set_footer(text="This book has been set as the current club read 😊".format(book_results_count))
 		await ctx.send(embed=embed)
+		await embed.pin()
 		
 	except asyncio.TimeoutError as e:
 		print(e)
