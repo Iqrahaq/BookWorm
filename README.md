@@ -25,10 +25,6 @@
 
 <p align="center"> As this project is still under construction, no details have been provided. </p>
 
-## Features
-
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-
 ### Prerequisites
 
 <p align="center"> As this project is still under construction, no details have been provided. </p>
