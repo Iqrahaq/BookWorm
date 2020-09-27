@@ -184,10 +184,10 @@ async def booksearch(ctx):
 # Set a book for the book club.
 @client.command()
 async def setbook(ctx):
-	BOOKS_RESULTS[:] = []
+	#BOOKS_RESULTS[:] = []
 	await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
 	def check(message):
-		return message.channel == ctx.channel
+		return message.channel == ctx.channel and message.author == ctx.author and (not message.content.startswith("bw!"))
 	try:
 		current_message = await client.wait_for('message', check=check, timeout=30)
 		book_results = goom(current_message.content)
@@ -245,6 +245,7 @@ async def setbook(ctx):
 		thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
 		embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
 		await ctx.send(embed=embed)
+		
 	except asyncio.TimeoutError as e:
 		print(e)
 		await ctx.send(f'{ctx.author.mention}, you took a while to respond... 🤔')
