@@ -295,8 +295,6 @@ async def quote(ctx):
 		response = random.choice(responses)
 	await ctx.send(response["text"] + ' - ' + response["author"])
 
-
-
 #######   TROUBLESHOOTING AND INFORMATION ########
 
 
