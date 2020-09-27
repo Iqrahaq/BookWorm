@@ -6,7 +6,7 @@ import mysql.connector
 import random
 import json
 import isbnlib
-from isbnlib import goom
+from isbnlib import *
 import discord
 from discord.ext import commands
 from discord.utils import get
@@ -24,7 +24,7 @@ MEMBERS = []
 CURRENT_BOOK_TITLE = []
 CURRENT_BOOK_AUTHOR = []
 BOOK_RESULTS_COUNT = []
-BOOKS = []
+BOOKS_RESULTS = []
 
 #DB connectivity
 mydb = mysql.connector.connect(
@@ -187,18 +187,54 @@ async def setbook(ctx):
         current_message = await client.wait_for('message', check=check, timeout=30)
         book_results = goom(current_message.content)
         if book_results:
+        	book_results = goom(current_message.content)
+        if book_results:
+            book_results_count = len(book_results)
             print(book_results)
-            embed = discord.Embed(colour = discord.Colour.green(), title="Book Results")
-            for book in book_results:
-                embed.add_field(name='{} ({})'.format(book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
-            embed.set_footer(text="{} books found!\nCouldn't find the book? Try \"bw!setbook\" again but with more precision 😉".format(book_results_count))
+            embed = discord.Embed(colour = discord.Colour.green(), title="Book Results:")
+            i = 1
+            while i < book_results_count:
+                for book in book_results:
+                    embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
+                    i+=1
+            embed.set_footer(text="{} books found!\n".format(book_results_count))
             await ctx.send(embed=embed)
         else:
             await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
     except asyncio.TimeoutError as e:
         print(e)
-        await ctx.send(f'{ctx.author.mention}, You took a while to respond... 🤔')
+        await ctx.send(f'{ctx.author.mention}, you took a while to respond... 🤔')
 
+    await ctx.send(f'{ctx.author.mention}, is your book in the results list? [yes or no]')
+    def check(message):
+    	return message.channel == ctx.channel and message.author == ctx.author
+    try:
+    	current_message = await client.wait_for('message', check=check, timeout=1000)
+    	if current_message.content == "y" or current_message.content == "yes" or current_message.content == "YES" or current_message.content == "Y":
+    		await ctx.send(f'{ctx.author.mention}, what number is it?')
+
+    		await ctx.send(f'{ctx.author.mention}, is your book in the results list? [yes or no]')
+    		def check(message):
+    			return message.channel == ctx.channel and message.author == ctx.author
+    		try:
+    			current_message = await client.wait_for('message', check=check, timeout=30)
+    			BOOK_CHOICE = (int(current_message.content)+1)
+    			embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
+    			CHOSEN_BOOK = meta(BOOKS_RESULTS[BOOK_CHOICE])
+    			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
+    			thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
+    			embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+    			print(thumbnail['thumbnail'])
+    			await ctx.send(embed=embed)
+    		except asyncio.TimeoutError as e:
+    			print(e)
+    			await ctx.send(f'{ctx.author.mention}, you took a while to respond... 🤔')
+    	else:
+    		await ctx.send(f'{ctx.author.mention}, maybe try \"bw!setbook\" again but with more search precision 😉')
+
+    except asyncio.TimeoutError as e:
+        print(e)
+        await ctx.send(f'{ctx.author.mention}, you took a while to respond... 🤔')
 
 # Answers with a random quote - using quotes.json.
 @client.command()
