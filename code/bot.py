@@ -241,8 +241,8 @@ async def setbook(ctx):
 		BOOK_CHOICE = (int(current_message.content)-1)
 
 		# DB update with new book set
-		val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.guild.id),)
-		mycursor.execute("UPDATE guilds SET current_book = %s WHERE guild_id = %s", val)
+		val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.author.name), str(ctx.guild.id),)
+		mycursor.execute("UPDATE guilds SET current_book = %s, set_by = %s WHERE guild_id = %s", val)
 		conn.commit()
 
 		embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
@@ -273,12 +273,13 @@ async def profile(ctx):
 	val = ((ctx.guild.id), str(ctx.author.mention),)
 	mycursor.execute("SELECT * FROM GUILD_%s WHERE member_tag=%s", val)
 	result = mycursor.fetchone()
-	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author.name))
 	var_member_name = result[2].decode()
 	var_member_tag = result[3].decode()
 	var_member_timezone = result[4]
 	var_member_count = result[5]
-	embed.add_field(name='📚: {}\n ({})'.format(var_member_count, var_member_timezone), value='{}'.format(var_member_tag), inline=False)
+	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author.name), description='{}'.format(var_member_tag))
+	embed.add_field(name='📚\t{}'.format(var_member_count), value='\u200b', inline=True)
+	embed.add_field(name='🌍\t({})'.format(var_member_timezone), value='\u200b', inline=True)
 	thumbnail = ctx.author.avatar_url
 	embed.set_thumbnail(url='{}'.format(thumbnail))
 	await ctx.send(embed=embed)
@@ -288,9 +289,10 @@ async def profile(ctx):
 @client.command()
 async def status(ctx):
 	val = (str(ctx.guild.id),)
-	mycursor.execute("SELECT current_book FROM guilds WHERE guild_id=%s", val)
-	current_book = str(mycursor.fetchall())
-
+	mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", val)
+	result = mycursor.fetchone()
+	current_book = result[3]
+	set_by = result[4]
 	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
 	CHOSEN_BOOK = meta(current_book)
 	if len(CHOSEN_BOOK['Authors']) == 0:
@@ -299,6 +301,7 @@ async def status(ctx):
 		embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
 	thumbnail = cover(current_book)
 	embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+	embed.set_footer(text="Set by: {}".format(set_by))
 	await ctx.send(embed=embed)
 	
 
