@@ -150,9 +150,34 @@ async def pickaworm(ctx):
     await ctx.send(embed=embed)
 
 
-# Searches for book.
+# Searches for book (generic compared to setbook).
 @client.command()
 async def booksearch(ctx):
+    await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
+    def check(message):
+        return message.channel == ctx.channel
+    try:
+        current_message = await client.wait_for('message', check=check, timeout=30)
+        book_results = goom(current_message.content)
+        if book_results:
+            book_results_count = len(book_results)
+            print(book_results)
+            embed = discord.Embed(colour = discord.Colour.green(), title="Book Results:")
+            i = 1
+            while i < book_results_count:
+                for book in book_results:
+                    embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
+                    i+=1
+            embed.set_footer(text="{} books found!\nCouldn't find the book? Try \"bw!booksearch\" again but with more precision 😉".format(book_results_count))
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
+    except asyncio.TimeoutError as e:
+        print(e)
+        await ctx.send("Response timed out.")
+
+@client.command()
+async def setbook(ctx):
     await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
     def check(message):
         return message.channel == ctx.channel
@@ -164,12 +189,13 @@ async def booksearch(ctx):
             embed = discord.Embed(colour = discord.Colour.green(), title="Book Results")
             for book in book_results:
                 embed.add_field(name='{} ({})'.format(book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
+            embed.set_footer(text="{} books found!\nCouldn't find the book? Try \"bw!setbook\" again but with more precision 😉".format(book_results_count))
             await ctx.send(embed=embed)
         else:
             await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
     except asyncio.TimeoutError as e:
         print(e)
-        await ctx.send("Response timed out.")
+        await ctx.send(f'{ctx.author.mention}, You took a while to respond... 🤔')
 
 
 # Answers with a random quote - using quotes.json.
