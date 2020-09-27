@@ -56,7 +56,7 @@ async def botsetup(ctx):
 	all_tables = mycursor.fetchall()
 	for table in all_tables:
 		if table is not GUILD or all_tables is empty:
-			mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
+			mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, member_status BOOLEAN DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
 			mydb.commit()
 			mycursor.execute("SELECT * FROM guilds WHERE guild_id={}".format(GUILD))
 			guilds_check = mycursor.fetchone()
@@ -251,18 +251,23 @@ async def setbook(ctx):
 # @client.command()
 # async def settimezone(ctx):
 
+# View club stats.
 
 # View bookworm profile.
-@client.command()
+@client.command(pass_context=True)
 async def profile(ctx):
-	profile_sql = 'SELECT * FROM GUILD_{} WHERE member_tag=%s'.format(ctx.guild.id)
-	val = (str(ctx.author.mention))
-	mycursor.execute(profile_sql, val)
-	current_profile = mycursor.fetchone()
-
-	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author))
-	embed.add_field(name='{}\n(📚: {})'.format(current_profile['member_name'], current_profile['member_count']), value='{}'.format(current_profile['member_tag']), inline=False)
-	thumbnail = ctx.author.avatar.url
+	profile_sql = "SELECT * FROM GUILD_{}".format(ctx.guild.id)
+	mycursor.execute(profile_sql)
+	profiles = mycursor.fetchall()
+	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author.name))
+	for result in profiles:
+		if result[3].decode() == ctx.author.mention:
+			var_member_name = result[2].decode()
+			var_member_tag = result[3].decode()
+			var_member_timezone = result[4]
+			var_member_count = result[5]
+			embed.add_field(name='📚: {}\n ({})'.format(var_member_count, var_member_timezone), value='{}'.format(var_member_tag), inline=False)
+	thumbnail = ctx.author.avatar_url
 	embed.set_thumbnail(url='{}'.format(thumbnail))
 	await ctx.send(embed=embed)
 
