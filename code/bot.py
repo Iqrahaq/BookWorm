@@ -56,7 +56,7 @@ async def botsetup(ctx):
 	all_tables = mycursor.fetchall()
 	for table in all_tables:
 		if table is not GUILD or all_tables is empty:
-			mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
+			mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
 			mydb.commit()
 			mycursor.execute("SELECT * FROM guilds WHERE guild_id={}".format(GUILD))
 			guilds_check = mycursor.fetchone()
@@ -161,7 +161,6 @@ async def booksearch(ctx):
 	try:
 		current_message = await client.wait_for('message', check=check, timeout=30)
 		book_results = goom(current_message.content)
-		print(book_results)
 		if book_results:
 			book_results_count = len(book_results)
 			embed = discord.Embed(colour = discord.Colour.green(), title="Book Results:")
@@ -248,6 +247,26 @@ async def setbook(ctx):
 		print(e)
 		await ctx.send(f'{ctx.author.mention}, you took a while to respond... 🤔')
 
+# Set timezone per user.
+# @client.command()
+# async def settimezone(ctx):
+
+
+# View bookworm profile.
+@client.command()
+async def profile(ctx):
+	profile_sql = 'SELECT * FROM GUILD_{} WHERE member_tag=%s'.format(ctx.guild.id)
+	val = (str(ctx.author.mention))
+	mycursor.execute(profile_sql, val)
+	current_profile = mycursor.fetchone()
+
+	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author))
+	embed.add_field(name='{}\n(📚: {})'.format(current_profile['member_name'], current_profile['member_count']), value='{}'.format(current_profile['member_tag']), inline=False)
+	thumbnail = ctx.author.avatar.url
+	embed.set_thumbnail(url='{}'.format(thumbnail))
+	await ctx.send(embed=embed)
+
+
 # Return current book club reading status.
 @client.command()
 async def status(ctx):
@@ -313,6 +332,8 @@ async def help(ctx):
 	embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds.', inline=False)
 	embed.add_field(name='bw!info', value='Returns information about the bot.', inline=False)
 	embed.add_field(name='bw!bookworms', value='Returns a list of the current book club members.', inline=False)
+	embed.add_field(name='bw!booksearch', value='Search for a book (Limited to 10 results per search).', inline=False)
+	embed.add_field(name='bw!setbook', value='Search for a book (Limited to 10 results per search).', inline=False)
 	embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
 	await ctx.send(embed=embed)
 
