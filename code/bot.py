@@ -23,6 +23,7 @@ ROLE = "Book Worm"
 MEMBERS = []
 CURRENT_BOOK_TITLE = []
 CURRENT_BOOK_AUTHOR = []
+NO_AUTHORS = False
 BOOK_RESULTS_COUNT = []
 BOOKS_RESULTS = []
 
@@ -168,7 +169,10 @@ async def booksearch(ctx):
 			i = 1
 			while i < book_results_count:
 				for book in book_results:
-					embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
+					if len(book['Authors']) == 0:
+						embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value='No Authors Specified', inline=False)
+					else:
+						embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
 					i+=1
 			embed.set_footer(text="{} books found!\nCouldn't find the book? Try \"bw!booksearch\" again but with more precision 😉".format(book_results_count))
 			await ctx.send(embed=embed)
@@ -198,23 +202,19 @@ async def setbook(ctx):
 						elif 'ISBN-13' in book:
 							BOOK_CHOICE = book['ISBN-13']
 						BOOKS_RESULTS.append(BOOK_CHOICE)
-						embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
+						if len(book['Authors']) == 0:
+							NO_AUTHORS = True
+							embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value='No Authors Specified', inline=False)
+						else:
+							embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
 						i+=1
-				embed.set_footer(text="{} books found!\n".format(book_results_count))
+				embed.set_footer(text="{} books found!\nCouldn't find the book? Try \"bw!setbook\" again but with more precision 😉".format(book_results_count))
 				await ctx.send(embed=embed)
 
-				await ctx.send(f'{ctx.author.mention}, is your book in the results list? [yes or no]')
+				await ctx.send(f'{ctx.author.mention}, what number is it?')
 				def check(message):
-					return message.channel == ctx.channel and message.author == ctx.author
-				
-				current_message = await client.wait_for('message', check=check, timeout=1000)
-				if current_message.content == "y" or current_message.content == "yes" or current_message.content == "YES" or current_message.content == "Y":
-					await ctx.send(f'{ctx.author.mention}, what number is it?')
-					def check(message):
-						return message.channel == ctx.channel and message.author == ctx.author
-					current_message = await client.wait_for('message', check=check, timeout=30)
-				else:
-					await ctx.send(f'{ctx.author.mention}, maybe try \"bw!setbook\" again but with more search precision 😉')
+					return message.channel == ctx.channel and message.author == ctx.author and (not message.content.startswith("bw!"))
+				current_message = await client.wait_for('message', check=check, timeout=30)
 
 			elif book_results_count == 1:
 				if 'ISBN-10' in book:
@@ -226,11 +226,14 @@ async def setbook(ctx):
 			await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
 
 		BOOK_CHOICE = (int(current_message.content)-1)
-		print(BOOKS_RESULTS)
-		print(BOOK_CHOICE)
 		embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
 		CHOSEN_BOOK = meta(BOOKS_RESULTS[BOOK_CHOICE])
-		embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
+		print(CHOSEN_BOOK)
+		print(len(CHOSEN_BOOK['Authors']))
+		if NO_AUTHORS == True:
+			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified', inline=False)
+		else:
+			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
 		thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
 		embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
 		await ctx.send(embed=embed)
