@@ -46,6 +46,7 @@ def create_connection():
 
 #Open DB Connection
 conn = create_connection()
+mycursor = conn.cursor(buffered=True)
 
 # Command prefix
 client = commands.Bot(command_prefix = 'bw!')
@@ -60,7 +61,6 @@ async def on_ready():
 
 @client.command()
 async def botsetup(ctx):
-	mycursor = conn.cursor(buffered=True)
 	GUILD = ctx.guild.id
 	default_role = get(ctx.guild.roles, name="BookWorm")
 	mycursor.execute("USE {}".format(conn.database))
@@ -70,12 +70,12 @@ async def botsetup(ctx):
 		if table is not GUILD or all_tables is empty:
 			mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, member_status BOOLEAN DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
 			conn.commit()
-			val = (ctx.guild.id)
-			mycursor.execute('SELECT * FROM guilds WHERE guild_id=?', val)
+			val = (ctx.guild.id,)
+			mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", val)
 			guilds_check = mycursor.fetchone()
 			if not guilds_check:
-				val = (str(GUILD), str(ctx.guild.name))
-				mycursor.execute('INSERT INTO guilds (guild_id, guild_name) VALUES (?, ?)', val)				
+				val = (str(GUILD), str(ctx.guild.name),)
+				mycursor.execute("INSERT INTO guilds (guild_id, guild_name) VALUES (%s, %s)", val)				
 				conn.commit()
 	
 	if get(ctx.guild.roles, name=ROLE):
@@ -88,7 +88,6 @@ async def botsetup(ctx):
 
 @client.command()
 async def members(ctx):
-	mycursor = conn.cursor(buffered=True)
 	mycursor.execute("SELECT * FROM members")
 	myresult = mycursor.fetchall()
 	for x in myresult:
@@ -98,7 +97,6 @@ async def members(ctx):
 # Check members in book club.
 @client.command(pass_context=True)
 async def bookworms(ctx):
-	mycursor = conn.cursor(buffered=True)
 	empty = True
 	role = get(ctx.guild.roles, name=ROLE)
 	if role is None:
@@ -106,27 +104,27 @@ async def bookworms(ctx):
 		return
 	else:
 		for member in ctx.guild.members:
-			val = (str(ctx.guild.id), str(member.mention))
-			mycursor.execute('SELECT * FROM GUILD_? WHERE member_tag=?', val)
+			val = (str(ctx.guild.id), str(member.mention),)
+			mycursor.execute("SELECT * FROM GUILD_%s WHERE member_tag=%s", val)
 			members_check = mycursor.fetchall()
 			if role in member.roles:
 				if not members_check:
-					val = (str(ctx.guild.id), str(ctx.guild.id), str(member), str(member.mention))
-					mycursor.execute('INSERT INTO GUILD_? (guild_id, member_name, member_tag) VALUES (?, ?, ?)', val)
+					val = (str(ctx.guild.id), str(ctx.guild.id), str(member), str(member.mention),)
+					mycursor.execute("INSERT INTO GUILD_%s (guild_id, member_name, member_tag) VALUES (%s, %s, %s)", val)
 					conn.commit()
 					empty = False
 				else:
 					empty = False
 			else:
-				val = (str(ctx.guild.id), str(member.mention))
-				mycursor.execute('DELETE FROM GUILD_? WHERE member_tag=?', val)
+				val = (str(ctx.guild.id), str(member.mention),)
+				mycursor.execute("DELETE FROM GUILD_%s WHERE member_tag=%s", val)
 				conn.commit()
 	if empty == True:
 		await ctx.send("Nobody has the role \"{}\"!".format(role))
 
 	embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
-	val = (str(ctx.guild.id))
-	mycursor.execute('SELECT * FROM GUILD_?', val)
+	val = (str(ctx.guild.id),)
+	mycursor.execute("SELECT * FROM GUILD_%s", val)
 	all_members = mycursor.fetchall()
 	for result in all_members:
 		var_member_name = result[2].decode()
@@ -140,7 +138,6 @@ async def bookworms(ctx):
 # Picks random book club member.
 @client.command()
 async def pickaworm(ctx):
-	mycursor = conn.cursor(buffered=True)
 	MEMBERS[:] = []
 	empty = True
 	role = get(ctx.guild.roles, name=ROLE)
@@ -148,8 +145,8 @@ async def pickaworm(ctx):
 		await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
 		return
 	else:
-		val = (str(ctx.guild.id))
-		mycursor.execute('SELECT * FROM GUILD_?', val)
+		val = (str(ctx.guild.id),)
+		mycursor.execute("SELECT * FROM GUILD_%s", val)
 		all_members = mycursor.fetchall()
 		for result in all_members:
 			var_member_name = result[2].decode()
@@ -199,7 +196,6 @@ async def booksearch(ctx):
 # Set a book for the book club.
 @client.command()
 async def setbook(ctx):
-	mycursor = conn.cursor(buffered=True)
 	BOOKS_RESULTS[:] = []
 	await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
 	def check(message):
@@ -245,8 +241,8 @@ async def setbook(ctx):
 		BOOK_CHOICE = (int(current_message.content)-1)
 
 		# DB update with new book set
-		val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.guild.id))
-		mycursor.execute('UPDATE guilds SET current_book = ? WHERE guild_id = ?', val)
+		val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.guild.id),)
+		mycursor.execute("UPDATE guilds SET current_book = %s WHERE guild_id = %s", val)
 		conn.commit()
 
 		embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
@@ -273,8 +269,8 @@ async def setbook(ctx):
 # View bookworm profile.
 @client.command(pass_context=True)
 async def profile(ctx):
-	val = (str(ctx.author.mention))
-	mycursor.execute('SELECT * FROM GUILD_? WHERE member_tag=?', val)
+	val = (str(ctx.author.mention),)
+	mycursor.execute("SELECT * FROM GUILD_%s WHERE member_tag=%s", val)
 	result = mycursor.fetchall()
 	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author.name))
 	var_member_name = result[2].decode()
@@ -290,9 +286,8 @@ async def profile(ctx):
 # Return current book club reading status.
 @client.command()
 async def status(ctx):
-	mycursor = conn.cursor(buffered=True)
-	val = (str(ctx.guild.id))
-	mycursor.execute('SELECT current_book FROM guilds WHERE guild_id=?', val)
+	val = (str(ctx.guild.id),)
+	mycursor.execute("SELECT current_book FROM guilds WHERE guild_id=%s", val)
 	current_book = str(mycursor.fetchall())
 
 	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
@@ -356,9 +351,6 @@ async def help(ctx):
 	embed.add_field(name='bw!setbook', value='Search for a book (Limited to 10 results per search).', inline=False)
 	embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
 	await ctx.send(embed=embed)
-
-# Close DB Connection
-conn.close()
 
 #token
 client.run(TOKEN)
