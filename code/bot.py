@@ -163,7 +163,6 @@ async def booksearch(ctx):
         book_results = goom(current_message.content)
         if book_results:
             book_results_count = len(book_results)
-            print(book_results)
             embed = discord.Embed(colour = discord.Colour.green(), title="Book Results:")
             i = 1
             while i < book_results_count:
@@ -190,13 +189,17 @@ async def setbook(ctx):
         	book_results = goom(current_message.content)
         if book_results:
             book_results_count = len(book_results)
-            print(book_results)
             embed = discord.Embed(colour = discord.Colour.green(), title="Book Results:")
             i = 1
             while i < book_results_count:
                 for book in book_results:
-                    embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
-                    i+=1
+                	if 'ISBN-10' in book:
+                		BOOK_CHOICE = book['ISBN-10']
+                	elif 'ISBN-13' in book:
+                		BOOK_CHOICE = book['ISBN-13']
+                	BOOKS_RESULTS.append(BOOK_CHOICE)
+                	embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
+                	i+=1
             embed.set_footer(text="{} books found!\n".format(book_results_count))
             await ctx.send(embed=embed)
         else:
@@ -218,13 +221,14 @@ async def setbook(ctx):
     			return message.channel == ctx.channel and message.author == ctx.author
     		try:
     			current_message = await client.wait_for('message', check=check, timeout=30)
-    			BOOK_CHOICE = (int(current_message.content)+1)
+    			BOOK_CHOICE = (int(current_message.content)-1)
+    			print(BOOKS_RESULTS)
+    			print(BOOK_CHOICE)
     			embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
     			CHOSEN_BOOK = meta(BOOKS_RESULTS[BOOK_CHOICE])
     			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
     			thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
     			embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
-    			print(thumbnail['thumbnail'])
     			await ctx.send(embed=embed)
     		except asyncio.TimeoutError as e:
     			print(e)
