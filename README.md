@@ -19,29 +19,29 @@
   </a>
 </p>
 
-<p align="center">This is a project is currently a work in progress! <br/> BookWorm Bot is a discord bot that has been designed to streamline book club services.</p>
+<p align="center">This is a project is currently a work in progress! <br/> BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 
 ## Getting Started
 
-<p align="center"> Blah. </p>
-<p align="center"> Blah. </p>
+<p align="center"> As this project is still under construction, no details have been provided. </p>
 
 ### Prerequisites
 
-Blah.
+<p align="center"> As this project is still under construction, no details have been provided. </p>
 
 
 ### Installing
 
-Blah.
-```
-Blah.
-```
-
-<p align="center"> Note: Blah. </p>
+<p align="center"> As this project is still under construction, no details have been provided. </p>
 
 ```
-Blah.
+<p align="center"> As this project is still under construction, no details have been provided. </p>
+```
+
+<p align="center"> As this project is still under construction, no details have been provided. </p>
+
+```
+<p align="center"> As this project is still under construction, no details have been provided. </p>
 ```
 
 ## Authors
