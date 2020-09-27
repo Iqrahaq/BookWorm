@@ -278,8 +278,7 @@ async def profile(ctx):
 	var_member_timezone = result[4]
 	var_member_count = result[5]
 	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author.name), description='{}'.format(var_member_tag))
-	embed.add_field(name='📚\t{}'.format(var_member_count), value='\u200b', inline=True)
-	embed.add_field(name='🌍\t({})'.format(var_member_timezone), value='\u200b', inline=True)
+	embed.add_field(name='📚\t{}\n🌍\t({})'.format(var_member_count, var_member_timezone), value='\u200b', inline=True)
 	thumbnail = ctx.author.avatar_url
 	embed.set_thumbnail(url='{}'.format(thumbnail))
 	await ctx.send(embed=embed)
