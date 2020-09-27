@@ -21,6 +21,11 @@
 
 <p align="center">This is a project is currently a work in progress! <br/> BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 
+## Features
+
+<p align="center"> As this project is still under construction, no details have been provided. </p>
+
+
 ## Getting Started
 
 <p align="center"> As this project is still under construction, no details have been provided. </p>
