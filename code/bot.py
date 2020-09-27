@@ -96,9 +96,11 @@ async def bookworms(ctx):
             members_check = mycursor.fetchall()
             if role in member.roles:
                 if not members_check:
-                    new_member_sql = 'INSERT INTO GUILD_{} (member_name, member_tag) VALUES (%s, %s)'.format(ctx.guild.id)
+                    new_member_sql = 'INSERT INTO GUILD_{} (guild_id, member_name, member_tag) VALUES (%s, %s, %s)'.format(ctx.guild.id)
+                    val = (str(ctx.guild.id), str(member), str(member.mention))
                     mycursor.execute(new_member_sql, val)
                     mydb.commit()
+                    empty = False
                 else:
                     empty = False
             else:
