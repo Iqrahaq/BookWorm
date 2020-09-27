@@ -22,9 +22,6 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 ROLE = "Book Worm"
 MEMBERS = []
-CURRENT_BOOK_TITLE = []
-CURRENT_BOOK_AUTHOR = []
-NO_AUTHORS = False
 BOOKS_RESULTS = []
 
 #DB connectivity
@@ -216,7 +213,6 @@ async def setbook(ctx):
 							BOOK_CHOICE = book['ISBN-13']
 						BOOKS_RESULTS.append(BOOK_CHOICE)
 						if len(book['Authors']) == 0:
-							NO_AUTHORS = True
 							embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value='No Authors Specified', inline=False)
 						else:
 							embed.add_field(name='{}. {} ({})'.format(i, book['Title'], book['Year']), value=', '.join(book['Authors']), inline=False)
