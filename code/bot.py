@@ -253,6 +253,7 @@ async def setbook(ctx):
 			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
 		thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
 		embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+		embed.set_footer(text="This book has been set as the current club read 😊".format(book_results_count))
 		await ctx.send(embed=embed)
 		
 	except asyncio.TimeoutError as e:
@@ -269,9 +270,9 @@ async def setbook(ctx):
 # View bookworm profile.
 @client.command(pass_context=True)
 async def profile(ctx):
-	val = (str(ctx.author.mention),)
+	val = ((ctx.guild.id), str(ctx.author.mention),)
 	mycursor.execute("SELECT * FROM GUILD_%s WHERE member_tag=%s", val)
-	result = mycursor.fetchall()
+	result = mycursor.fetchone()
 	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Profile:".format(ctx.author.name))
 	var_member_name = result[2].decode()
 	var_member_tag = result[3].decode()
