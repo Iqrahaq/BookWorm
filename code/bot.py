@@ -24,7 +24,6 @@ MEMBERS = []
 CURRENT_BOOK_TITLE = []
 CURRENT_BOOK_AUTHOR = []
 NO_AUTHORS = False
-BOOK_RESULTS_COUNT = []
 BOOKS_RESULTS = []
 
 #DB connectivity
@@ -182,8 +181,10 @@ async def booksearch(ctx):
 		print(e)
 		await ctx.send("Response timed out.")
 
+# Set a book for the book club.
 @client.command()
 async def setbook(ctx):
+	BOOKS_RESULTS[:] = []
 	await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
 	def check(message):
 		return message.channel == ctx.channel
@@ -226,6 +227,13 @@ async def setbook(ctx):
 			await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
 
 		BOOK_CHOICE = (int(current_message.content)-1)
+
+		# DB update with new book set
+		update_book_sql = "UPDATE guilds SET current_book = %s WHERE guild_id = %s"
+		val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.guild.id))
+		mycursor.execute(update_book_sql, val)
+		mydb.commit()
+
 		embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
 		CHOSEN_BOOK = meta(BOOKS_RESULTS[BOOK_CHOICE])
 		print(CHOSEN_BOOK)
@@ -241,6 +249,27 @@ async def setbook(ctx):
 		print(e)
 		await ctx.send(f'{ctx.author.mention}, you took a while to respond... 🤔')
 
+# Return current book club reading status.
+@client.command()
+async def status(ctx):
+	current_book_sql = 'SELECT * FROM guilds WHERE guild_id=%s'
+	val = (str(ctx.guild.id))
+	mycursor.execute(current_book_sql, val)
+	current_book = mycursor.fetchall()
+
+	embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Current Read:".format(ctx))
+	CHOSEN_BOOK = meta(current_book)
+	print(CHOSEN_BOOK)
+	print(len(CHOSEN_BOOK['Authors']))
+	if NO_AUTHORS == True:
+		embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified', inline=False)
+	else:
+		embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
+	thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
+	embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+	await ctx.send(embed=embed)
+
+
 # Answers with a random quote - using quotes.json.
 @client.command()
 async def quote(ctx):
@@ -253,7 +282,7 @@ async def quote(ctx):
 
 
 
-#####   TROUBLESHOOTING AND INFORMATION ########
+#######   TROUBLESHOOTING AND INFORMATION ########
 
 
 # Returns information about bot.
