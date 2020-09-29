@@ -2,5 +2,4 @@ git+https://github.com/Rapptz/discord.py
 python-dotenv==0.14.0
 isbntools
 isbnlib
-mysql-connector-python
 asyncio
