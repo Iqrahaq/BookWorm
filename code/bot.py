@@ -2,11 +2,11 @@
 
 # Include relevant libraries.
 import os
-import mysql.connector
-from mysql.connector import Error
 import random
 import json
 import isbnlib
+import sqlite3
+from sqlite3 import Error
 from isbnlib import *
 import discord
 from discord.ext import commands
@@ -24,25 +24,9 @@ ROLE = "Book Worm"
 MEMBERS = []
 BOOKS_RESULTS = []
 
-#DB connectivity
-def create_connection():
-	conn = None
-	try:
-		conn = mysql.connector.connect(
-			host=os.getenv('DB_HOST'),
-			user=os.getenv('DB_USER'),
-			password=os.getenv('DB_PASSWORD'),
-			database=os.getenv('DB_DATABASE')
-		)
-		print ("Connection to MySQL DB successful")
-	except Error as e:
-		print(f"The error '{e}' occured.")
-
-	return conn
-
-#Open DB Connection
-conn = create_connection()
-mycursor = conn.cursor(buffered=True)
+#DB connectivity.
+conn = sqlite3.connect("bookworm.db")
+mycursor = conn.cursor()
 
 # Command prefix
 client = commands.Bot(command_prefix = 'bw!')
@@ -59,20 +43,17 @@ async def on_ready():
 async def botsetup(ctx):
 	GUILD = ctx.guild.id
 	default_role = get(ctx.guild.roles, name="BookWorm")
-	mycursor.execute("USE {}".format(conn.database))
-	mycursor.execute('SHOW TABLES')
-	all_tables = mycursor.fetchall()
-	for table in all_tables:
-		if table is not GUILD or all_tables is empty:
-			mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, member_status BOOLEAN DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
-			conn.commit()
-			val = (ctx.guild.id,)
-			mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", val)
-			guilds_check = mycursor.fetchone()
-			if not guilds_check:
-				val = (str(GUILD), str(ctx.guild.name),)
-				mycursor.execute("INSERT INTO guilds (guild_id, guild_name) VALUES (%s, %s)", val)				
-				conn.commit()
+	mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INTEGER PRIMARY KEY, guild_id TEXT, member_name TEXT, member_tag TEXT, member_timezone TEXT, member_count INTEGER, member_books TEXT, member_status TEXT)".format(str(GUILD)))
+	conn.commit()
+	mycursor.execute("CREATE TABLE IF NOT EXISTS guilds (guild_id INTEGER PRIMARY KEY, guild_name TEXT, guild_books TEXT, current_book INTEGER, set_by TEXT, deadline TIMESTAMP)")
+	conn.commit()
+	val = (ctx.guild.id,)
+	mycursor.execute("SELECT * FROM guilds WHERE guild_id=?", val)
+	guilds_check = mycursor.fetchone()
+	if not guilds_check:
+		val = (str(GUILD), str(ctx.guild.name),)
+		mycursor.execute("INSERT INTO guilds (guild_id, guild_name) VALUES (?, ?)", val)				
+		conn.commit()
 	
 	if get(ctx.guild.roles, name=ROLE):
 		await ctx.send('Role: "Book Worm" already exists.\nPlease make sure you have this role assigned to join Book Club!')
@@ -100,31 +81,30 @@ async def bookworms(ctx):
 		return
 	else:
 		for member in ctx.guild.members:
-			val = (ctx.guild.id, str(member.mention),)
-			mycursor.execute("SELECT * FROM GUILD_%s WHERE member_tag=%s", val)
+			val = (str(member.mention),)
+			mycursor.execute("SELECT * FROM GUILD_{} WHERE member_tag=?".format(ctx.guild.id), val)
 			members_check = mycursor.fetchall()
 			if role in member.roles:
 				if not members_check:
-					val = (ctx.guild.id, str(ctx.guild.id), str(member), str(member.mention),)
-					mycursor.execute("INSERT INTO GUILD_%s (guild_id, member_name, member_tag) VALUES (%s, %s, %s)", val)
+					val = (str(ctx.guild.id), str(member), str(member.mention),)
+					mycursor.execute("INSERT INTO GUILD_{} (guild_id, member_name, member_tag) VALUES (?, ?, ?)".format(ctx.guild.id), val)
 					conn.commit()
 					empty = False
 				else:
 					empty = False
 			else:
-				val = (ctx.guild.id, str(member.mention),)
-				mycursor.execute("DELETE FROM GUILD_%s WHERE member_tag=%s", val)
+				val = (str(member.mention),)
+				mycursor.execute("DELETE FROM GUILD_{} WHERE member_tag=?".format(ctx.guild.id), val)
 				conn.commit()
 	if empty == True:
 		await ctx.send("Nobody has the role \"{}\"!".format(role))
 
 	embed = discord.Embed(colour = discord.Colour.green(), title="Book Worms (Book Club Members)")
-	val = (ctx.guild.id,)
-	mycursor.execute("SELECT * FROM GUILD_%s", val)
+	mycursor.execute("SELECT * FROM GUILD_{}".format(ctx.guild.id))
 	all_members = mycursor.fetchall()
 	for result in all_members:
-		var_member_name = result[2].decode()
-		var_member_tag = result[3].decode()
+		var_member_name = result[2]
+		var_member_tag = result[3]
 		var_member_count = result[5]
 		embed.add_field(name='○ {}'.format(var_member_name), value='({})\n 📚: {}\n\n'.format(var_member_tag, var_member_count), inline=False)
 	await ctx.send(embed=embed)
@@ -141,12 +121,11 @@ async def pickaworm(ctx):
 		await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
 		return
 	else:
-		val = (str(ctx.guild.id),)
-		mycursor.execute("SELECT * FROM GUILD_%s", val)
+		mycursor.execute("SELECT * FROM GUILD_{}".format(ctx.guild.id))
 		all_members = mycursor.fetchall()
 		for result in all_members:
-			var_member_name = result[2].decode()
-			var_member_tag = result[3].decode()
+			var_member_name = result[2]
+			var_member_tag = result[3]
 			MEMBERS.append('○ {} ({}).\n'.format(var_member_name, var_member_tag))
 			empty = False
 
@@ -237,7 +216,7 @@ async def setbook(ctx):
 
 		# DB update with new book set
 		val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.author.name), str(ctx.guild.id),)
-		mycursor.execute("UPDATE guilds SET current_book = %s, set_by = %s WHERE guild_id = %s", val)
+		mycursor.execute("UPDATE guilds SET current_book = ?, set_by = ? WHERE guild_id = ?", val)
 		conn.commit()
 
 		embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
@@ -250,7 +229,6 @@ async def setbook(ctx):
 		embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
 		embed.set_footer(text="This book has been set as the current club read 😊".format(book_results_count))
 		await ctx.send(embed=embed)
-		await embed.pin()
 		
 	except asyncio.TimeoutError as e:
 		print(e)
@@ -267,7 +245,7 @@ async def setbook(ctx):
 @client.command(pass_context=True)
 async def profile(ctx):
 	val = ((ctx.guild.id), str(ctx.author.mention),)
-	mycursor.execute("SELECT * FROM GUILD_%s WHERE member_tag=%s", val)
+	mycursor.execute("SELECT * FROM GUILD_? WHERE member_tag=?", val)
 	result = mycursor.fetchone()
 	var_member_name = result[2].decode()
 	var_member_tag = result[3].decode()
@@ -284,7 +262,7 @@ async def profile(ctx):
 @client.command()
 async def status(ctx):
 	val = (str(ctx.guild.id),)
-	mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", val)
+	mycursor.execute("SELECT * FROM guilds WHERE guild_id=?", val)
 	result = mycursor.fetchone()
 	current_book = result[3]
 	set_by = result[4]
