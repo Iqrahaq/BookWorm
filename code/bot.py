@@ -2,7 +2,8 @@
 
 # Include relevant libraries.
 import os
-import mysql.connector
+import pymysql
+from pymysql import cursors
 import random
 import json
 import isbnlib
@@ -27,14 +28,14 @@ NO_AUTHORS = False
 BOOKS_RESULTS = []
 
 #DB connectivity
-mydb = mysql.connector.connect(
+mydb = pymysql.connect(
 	host=os.getenv('DB_HOST'),
 	user=os.getenv('DB_USER'),
 	password=os.getenv('DB_PASSWORD'),
-	database=os.getenv('DB_DATABASE')
+	db=os.getenv('DB_DATABASE')
 )
 
-mycursor = mydb.cursor(buffered=True)
+mycursor = mydb.cursor()
 
 # Command prefix
 client = commands.Bot(command_prefix = 'bw!')
@@ -52,19 +53,15 @@ async def botsetup(ctx):
 	GUILD = ctx.guild.id
 	default_role = get(ctx.guild.roles, name="BookWorm")
 	mycursor.execute("USE {}".format(mydb.database))
-	mycursor.execute('SHOW TABLES')
-	all_tables = mycursor.fetchall()
-	for table in all_tables:
-		if table is not GUILD or all_tables is empty:
-			mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
-			mydb.commit()
-			mycursor.execute("SELECT * FROM guilds WHERE guild_id={}".format(GUILD))
-			guilds_check = mycursor.fetchone()
-			if not guilds_check:
-				new_guild_sql = 'INSERT INTO guilds (guild_id, guild_name) VALUES (%s, %s)'
-				val = (str(GUILD), str(ctx.guild.name))
-				mycursor.execute(new_guild_sql, val)
-				mydb.commit()
+	mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
+	mydb.commit()
+	mycursor.execute("SELECT * FROM guilds WHERE guild_id={}".format(GUILD))
+	guilds_check = mycursor.fetchone()
+	if not guilds_check:
+		new_guild_sql = 'INSERT INTO guilds (guild_id, guild_name) VALUES (%s, %s)'
+		val = (str(GUILD), str(ctx.guild.name))
+		mycursor.execute(new_guild_sql, val)
+		mydb.commit()
 	
 	if get(ctx.guild.roles, name=ROLE):
 		await ctx.send('Role: "Book Worm" already exists.\nPlease make sure you have this role assigned to join Book Club!')
@@ -183,7 +180,7 @@ async def booksearch(ctx):
 # Set a book for the book club.
 @client.command()
 async def setbook(ctx):
-	#BOOKS_RESULTS[:] = []
+	BOOKS_RESULTS[:] = []
 	await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
 	def check(message):
 		return message.channel == ctx.channel and message.author == ctx.author and (not message.content.startswith("bw!"))
@@ -192,7 +189,7 @@ async def setbook(ctx):
 		book_results = goom(current_message.content)
 		if book_results:
 			book_results_count = len(book_results)
-			if(book_results_count > 1):
+			if book_results_count > 1:
 				embed = discord.Embed(colour = discord.Colour.green(), title="Book Results:")
 				i = 1
 				while i < book_results_count:
@@ -217,10 +214,10 @@ async def setbook(ctx):
 				current_message = await client.wait_for('message', check=check, timeout=30)
 
 			elif book_results_count == 1:
-				if 'ISBN-10' in book:
-					BOOK_CHOICE = book['ISBN-10']
-				elif 'ISBN-13' in book:
-					BOOK_CHOICE = book['ISBN-13']
+				if 'ISBN-10' in book_results:
+					BOOK_CHOICE = book_results['ISBN-10']
+				elif 'ISBN-13' in book_results:
+					BOOK_CHOICE = book_results['ISBN-13']
 				BOOKS_RESULTS.append(BOOK_CHOICE)
 		else:
 			await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
@@ -234,11 +231,11 @@ async def setbook(ctx):
 		mydb.commit()
 
 		embed = discord.Embed(colour = discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
-		CHOSEN_BOOK = meta(BOOKS_RESULTS[BOOK_CHOICE])
-		if len(CHOSEN_BOOK['Authors']) == 0:
-			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified', inline=False)
+		chosen_book = meta(BOOKS_RESULTS[BOOK_CHOICE])
+		if len(chosen_book['Authors']) == 0:
+			embed.add_field(name='{} ({})'.format(chosen_book['Title'], chosen_book['Year']), value='No Authors Specified', inline=False)
 		else:
-			embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
+			embed.add_field(name='{} ({})'.format(chosen_book['Title'], chosen_book['Year']), value=', '.join(chosen_book['Authors']), inline=False)
 		thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
 		embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
 		await ctx.send(embed=embed)
