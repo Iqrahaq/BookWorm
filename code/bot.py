@@ -52,7 +52,6 @@ async def on_ready():
 async def botsetup(ctx):
 	GUILD = ctx.guild.id
 	default_role = get(ctx.guild.roles, name="BookWorm")
-	mycursor.execute("USE {}".format(mydb.database))
 	mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
 	mydb.commit()
 	mycursor.execute("SELECT * FROM guilds WHERE guild_id={}".format(GUILD))
