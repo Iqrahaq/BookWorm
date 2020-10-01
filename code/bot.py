@@ -54,7 +54,7 @@ async def botsetup(ctx):
 	default_role = get(ctx.guild.roles, name="BookWorm")
 	mycursor.execute("CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(GUILD))
 	mydb.commit()
-	mycursor.execute("SELECT * FROM guilds WHERE guild_id={}".format(GUILD))
+	mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", (str(GUILD)))
 	guilds_check = mycursor.fetchone()
 	if not guilds_check:
 		new_guild_sql = 'INSERT INTO guilds (guild_id, guild_name) VALUES (%s, %s)'
@@ -112,8 +112,8 @@ async def bookworms(ctx):
 	mycursor.execute(all_members_sql)
 	all_members = mycursor.fetchall()
 	for result in all_members:
-		var_member_name = result[2].decode()
-		var_member_tag = result[3].decode()
+		var_member_name = result[2]
+		var_member_tag = result[3]
 		var_member_count = result[4]
 		embed.add_field(name='○ {}'.format(var_member_name), value='({})\n 📚: {}\n\n'.format(var_member_tag, var_member_count), inline=False)
 	await ctx.send(embed=embed)
@@ -133,8 +133,8 @@ async def pickaworm(ctx):
 		mycursor.execute(all_members_sql)
 		all_members = mycursor.fetchall()
 		for result in all_members:
-			var_member_name = result[2].decode()
-			var_member_tag = result[3].decode()
+			var_member_name = result[2]
+			var_member_tag = result[3]
 			MEMBERS.append('○ {} ({}).\n'.format(var_member_name, var_member_tag))
 			empty = False
 
