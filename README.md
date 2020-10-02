@@ -21,28 +21,14 @@
 
 <p align="center">This is a project is currently a work in progress! <br/> BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 
-## Getting Started
+## Getting Set Up.
 
-<p align="center"> As this project is still under construction, no details have been provided. </p>
+<a href="https://discord.com/api/oauth2/authorize?client_id=757386330253819944&permissions=1476918336&scope=bot">Authorise Book Worm Bot to join your server.</a>
 
 ### Prerequisites
 
-<p align="center"> As this project is still under construction, no details have been provided. </p>
+<p align="center"> Command Prefix = "bw!"</p>
 
-
-### Installing
-
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-
-```
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-```
-
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-
-```
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-```
 
 ## Features
 
