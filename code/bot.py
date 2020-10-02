@@ -52,7 +52,7 @@ async def botsetup(ctx):
     GUILD = ctx.guild.id
     default_role = get(ctx.guild.roles, name="BookWorm")
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, read_status BOOLEAN DEFAULT 'No', member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(
+        "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, read_status BOOLEAN DEFAULT '0', member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(
             GUILD))
     mydb.commit()
     mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", (str(GUILD)))
@@ -69,14 +69,6 @@ async def botsetup(ctx):
     else:
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
         await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
-
-
-@client.command()
-async def members(ctx):
-    mycursor.execute("SELECT * FROM members")
-    myresult = mycursor.fetchall()
-    for x in myresult:
-        await ctx.send(x)
 
 
 # Check members in book club.
@@ -248,12 +240,12 @@ async def setbook(ctx):
         BOOK_CHOICE = (int(current_message.content) - 1)
 
         # DB update with new book set
-        update_book_sql = "UPDATE guilds SET current_book = %s WHERE guild_id = %s"
-        val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.guild.id))
+        update_book_sql = "UPDATE guilds SET current_book = %s, set_by = %s WHERE guild_id = %s"
+        val = (str(BOOKS_RESULTS[BOOK_CHOICE]), str(ctx.author.display_name),  str(ctx.guild.id))
         mycursor.execute(update_book_sql, val)
         mydb.commit()
 
-        update_status_sql = "UPDATE GUILD_{} SET read_status = 'No'".format(ctx.guild.id)
+        update_status_sql = "UPDATE GUILD_{} SET read_status = '0'".format(ctx.guild.id)
         mycursor.execute(update_status_sql)
         mydb.commit()
 
@@ -288,7 +280,7 @@ async def bookfinished(ctx):
     mycursor.execute(profile_sql, val)
     current_profile = mycursor.fetchone()
     var_member_name = current_profile[2]
-    read_status = current_profile[5]
+    var_read_status = current_profile[5]
     var_member_count = current_profile[6]
     var_member_tag = current_profile[3]
 
@@ -297,13 +289,14 @@ async def bookfinished(ctx):
     mycursor.execute(count_check_sql, val)
     result = mycursor.fetchone()
     # if book status is set and book status matches current book then increment.
+    print(result)
     if result == 'NULL':
-        await ctx.send("But there is not set book for the club...? 🤨")
-    elif read_status == 'Yes':
+        await ctx.send("But there is no set book for the club...? 🤨")
+    elif var_read_status == 1:
         await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
     else:
         var_member_count = var_member_count + 1
-        update_sql = 'UPDATE GUILD_{} SET member_count=%s AND read_status="Yes" WHERE member_tag=%s'.format(ctx.guild.id)
+        update_sql = "UPDATE GUILD_{} SET member_count=%s, read_status='1' WHERE member_tag=%s".format(ctx.guild.id)
         val = (var_member_count, str(ctx.author.mention))
         mycursor.execute(update_sql, val)
         mydb.commit()
@@ -311,10 +304,7 @@ async def bookfinished(ctx):
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
         embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_tag),
                         inline=False)
-        if read_status == 'Yes':
-            embed.set_footer(text="Well done! You've finished the current set book for the club! 🥳")
-        else:
-            embed.set_footer(text="It looks like you haven't finished the current set book for the club yet... 🤔")
+        embed.set_footer(text="Well done! You've finished the current set book for the club! 🥳")
         thumbnail = ctx.author.avatar_url
         embed.set_thumbnail(url='{}'.format(thumbnail))
         await ctx.send(embed=embed)
@@ -328,13 +318,14 @@ async def profile(ctx):
     mycursor.execute(profile_sql, val)
     current_profile = mycursor.fetchone()
     var_member_name = current_profile[2]
-    read_status = current_profile[5]
+    var_read_status = current_profile[5]
     var_member_count = current_profile[6]
     var_member_tag = current_profile[3]
+
     embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
     embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_tag),
                     inline=False)
-    if read_status == 'Yes':
+    if var_read_status == 1:
         embed.set_footer(text="Well done! You've finished the current set book for the club! 🥳")
     else:
         embed.set_footer(text="It looks like you haven't finished the current set book for the club yet... 🤔")
@@ -346,21 +337,25 @@ async def profile(ctx):
 
 # Return current book club reading status.
 @client.command()
-async def status(ctx):
+async def currentbook(ctx):
     current_book_sql = 'SELECT current_book FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
     mycursor.execute(current_book_sql)
-    current_book = str(mycursor.fetchone())
+    current_book = mycursor.fetchone()
 
     embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
-    CHOSEN_BOOK = meta(current_book)
-    if len(CHOSEN_BOOK['Authors']) == 0:
-        embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified',
-                        inline=False)
+    if current_book[0] is None:
+        embed.add_field(name='There is currently no set book for the book club!', value='\u200b', inline=False)
+        embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/vector/bookworm-01.png')
     else:
-        embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']),
-                        value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
-    thumbnail = cover(current_book)
-    embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+        CHOSEN_BOOK = meta(str(current_book))
+        if len(CHOSEN_BOOK['Authors']) == 0:
+            embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified',
+                            inline=False)
+        else:
+            embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']),
+                            value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
+        thumbnail = cover(current_book[0])
+        embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
     await ctx.send(embed=embed)
 
 
@@ -414,11 +409,17 @@ async def help(ctx):
     embed.set_author(name='Help - List of commands available: ')
     embed.add_field(name='bw!ping', value='Returns bot respond time in milliseconds.', inline=False)
     embed.add_field(name='bw!info', value='Returns information about the bot.', inline=False)
-    embed.add_field(name='bw!bookworms', value='Returns a list of the current book club members.', inline=False)
+    embed.add_field(name='bw!botsetup', value='If I\'m new, use this command to create the required role and entries in my system.', inline=False)
+    embed.add_field(name='bw!bookworms', value='Returns a list of the current book club members and their book club information.', inline=False)
+    embed.add_field(name='bw!pickaworm', value='Picks a random bookworm (book club member).', inline=False)
+    embed.add_field(name='bw!profile', value='Returns your book club profile.', inline=False)
     embed.add_field(name='bw!booksearch', value='Search for a book (Limited to 10 results per search).', inline=False)
-    embed.add_field(name='bw!setbook', value='Search for a book (Limited to 10 results per search).', inline=False)
-    embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book club!', inline=False)
+    embed.add_field(name='bw!setbook', value='Search for a book (Limited to 10 results per search) and set it as the current book club\'s read.', inline=False)
+    embed.add_field(name='bw!currentbook', value='Check to see what the current set book is for book club.', inline=False)
+    embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book clu.!', inline=False)
     embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
+    embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/vector/bookworm-01.png')
+    embed.set_footer(text="© Iqra Haq (BuraWolf#1158)")
     await ctx.send(embed=embed)
 
 
