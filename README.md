@@ -46,7 +46,30 @@
 
 ## Features
 
-<p align="center"> As this project is still under construction, no details have been provided. </p>
+<p align="center"> bw!ping
+Returns bot respond time in milliseconds.
+bw!info
+Returns information about the bot.
+bw!botsetup
+If I'm new, use this command to create the required role and entries in my system.
+bw!bookworms
+Returns a list of the current book club members and their book club information.
+bw!pickaworm
+Picks a random bookworm (book club member).
+bw!profile
+Returns your book club profile.
+bw!booksearch
+Search for a book (Limited to 10 results per search).
+bw!setbook
+Search for a book (Limited to 10 results per search) and set it as the current book club's read.
+bw!currentbook
+Check to see what the current set book is for book club.
+bw!bookfinished
+Let BookWorm Bot know that you've finished the current set book for book clu.!
+bw!quote
+Returns an inspirational quote.
+
+© Iqra Haq (BuraWolf#1158) </p>
 
 
 ## Authors
