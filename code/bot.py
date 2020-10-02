@@ -299,7 +299,7 @@ async def bookfinished(ctx):
     # if book status is set and book status matches current book then increment.
     if result == 'NULL':
         await ctx.send("But there is not set book for the club...? 🤨")
-    elif read_status is 'Yes':
+    elif read_status == 'Yes':
         await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
     else:
         var_member_count = var_member_count + 1
@@ -417,6 +417,7 @@ async def help(ctx):
     embed.add_field(name='bw!bookworms', value='Returns a list of the current book club members.', inline=False)
     embed.add_field(name='bw!booksearch', value='Search for a book (Limited to 10 results per search).', inline=False)
     embed.add_field(name='bw!setbook', value='Search for a book (Limited to 10 results per search).', inline=False)
+    embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book club!', inline=False)
     embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
     await ctx.send(embed=embed)
 
