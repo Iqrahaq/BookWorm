@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "task-quotes",
+      "appliesTo": "code/quotes.json",
+      "type": "launch"
+    }
+  ]
+}

@@ -17,12 +17,11 @@ import asyncio
 # Use dotenv to conceal token.
 load_dotenv()
 
-# Other variables
+# Other variables 
 TOKEN = os.getenv('DISCORD_TOKEN')
 ROLE = "Book Worm"
 MEMBERS = []
 CURRENT_BOOK = None
-COUNT_UPDATED = False
 NO_AUTHORS = False
 BOOKS_RESULTS = []
 
@@ -53,7 +52,7 @@ async def botsetup(ctx):
     GUILD = ctx.guild.id
     default_role = get(ctx.guild.roles, name="BookWorm")
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(
+        "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, read_status BOOLEAN DEFAULT 'No', member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(
             GUILD))
     mydb.commit()
     mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", (str(GUILD)))
@@ -121,7 +120,7 @@ async def bookworms(ctx):
         var_member_name = result[2]
         var_member_tag = result[3]
         var_member_count = result[5]
-        embed.add_field(name='○ {}'.format(var_member_name),
+        embed.add_field(name='• {}'.format(var_member_name),
                         value='({})\n 📚: {}\n\n'.format(var_member_tag, var_member_count), inline=False)
     await ctx.send(embed=embed)
 
@@ -254,6 +253,10 @@ async def setbook(ctx):
         mycursor.execute(update_book_sql, val)
         mydb.commit()
 
+        update_status_sql = "UPDATE GUILD_{} SET read_status = 'No'".format(ctx.guild.id)
+        mycursor.execute(update_status_sql)
+        mydb.commit()
+
         CURRENT_BOOK = BOOKS_RESULTS[BOOK_CHOICE]
 
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
@@ -285,31 +288,36 @@ async def bookfinished(ctx):
     mycursor.execute(profile_sql, val)
     current_profile = mycursor.fetchone()
     var_member_name = current_profile[2]
-    var_member_count = current_profile[5]
+    read_status = current_profile[5]
+    var_member_count = current_profile[6]
     var_member_tag = current_profile[3]
 
     count_check_sql = 'SELECT current_book FROM guilds WHERE guild_id=%s'
     val = (str(ctx.guild.id))
     mycursor.execute(count_check_sql, val)
     result = mycursor.fetchone()
-    # # if book status is set and book status matches current book then increment.
-    # if result == 'NULL' or COUNT_UPDATED is not True:
-    #     COUNT_UPDATED = True
-    # else:
-    #     var_member_count = var_member_count + 1
-	# 	COUNT_UPDATED = True
+    # if book status is set and book status matches current book then increment.
+    if result == 'NULL':
+        await ctx.send("But there is not set book for the club...? 🤨")
+    elif read_status is 'Yes':
+        await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
+    else:
+        var_member_count = var_member_count + 1
+        update_sql = 'UPDATE GUILD_{} SET member_count=%s AND read_status="Yes" WHERE member_tag=%s'.format(ctx.guild.id)
+        val = (var_member_count, str(ctx.author.mention))
+        mycursor.execute(update_sql, val)
+        mydb.commit()
 
-    update_sql = 'UPDATE GUILD_{} SET member_count=%s WHERE member_tag=%s'.format(ctx.guild.id)
-    val = (var_member_count, str(ctx.author.mention))
-    mycursor.execute(update_sql, val)
-    mydb.commit()
-
-    embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
-    embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_tag),
-                    inline=False)
-    thumbnail = ctx.author.avatar_url
-    embed.set_thumbnail(url='{}'.format(thumbnail))
-    await ctx.send(embed=embed)
+        embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
+        embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_tag),
+                        inline=False)
+        if read_status == 'Yes':
+            embed.set_footer(text="Well done! You've finished the current set book for the club! 🥳")
+        else:
+            embed.set_footer(text="It looks like you haven't finished the current set book for the club yet... 🤔")
+        thumbnail = ctx.author.avatar_url
+        embed.set_thumbnail(url='{}'.format(thumbnail))
+        await ctx.send(embed=embed)
 
 
 # View bookworm profile.
@@ -320,11 +328,16 @@ async def profile(ctx):
     mycursor.execute(profile_sql, val)
     current_profile = mycursor.fetchone()
     var_member_name = current_profile[2]
-    var_member_count = current_profile[5]
+    read_status = current_profile[5]
+    var_member_count = current_profile[6]
     var_member_tag = current_profile[3]
     embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
     embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_tag),
                     inline=False)
+    if read_status == 'Yes':
+        embed.set_footer(text="Well done! You've finished the current set book for the club! 🥳")
+    else:
+        embed.set_footer(text="It looks like you haven't finished the current set book for the club yet... 🤔")
     thumbnail = ctx.author.avatar_url
     embed.set_thumbnail(url='{}'.format(thumbnail))
 
