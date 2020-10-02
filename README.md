@@ -21,34 +21,21 @@
 
 <p align="center">This is a project is currently a work in progress! <br/> BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 
-## Getting Started
+## Getting Set Up.
 
-<p align="center"> As this project is still under construction, no details have been provided. </p>
+<p align="center"><a target="blank" href="https://discord.com/api/oauth2/authorize?client_id=757386330253819944&permissions=1476918336&scope=bot">Authorise Book Worm Bot to join your server.</a> <br/>
+FYI: The above link opens in current tab!</p>
 
-### Prerequisites
+## Prerequisites
 
-<p align="center"> As this project is still under construction, no details have been provided. </p>
+<p align="center"> Command Prefix = "bw!"</p>
 
-
-### Installing
-
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-
-```
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-```
-
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-
-```
-<p align="center"> As this project is still under construction, no details have been provided. </p>
-```
 
 ## Features
 
-**bw!ping** - Returns bot respond time in milliseconds.
+**bw!ping** - Returns my response time in milliseconds.
 
-**bw!info** - Returns information about the bot.
+**bw!info** - Returns information about me.
 
 **bw!botsetup** - If I'm new, use this command to create the required role and entries in my system.
 
