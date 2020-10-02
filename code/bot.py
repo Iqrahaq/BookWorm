@@ -348,24 +348,28 @@ async def profile(ctx):
 # Return current book club reading status.
 @client.command()
 async def currentbook(ctx):
-    current_book_sql = 'SELECT current_book FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
+    current_book_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
     mycursor.execute(current_book_sql)
     current_book = mycursor.fetchone()
+    var_current_book = current_book[0]
+    var_set_by = current_book[1]
 
     embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
-    if current_book[0] is None:
+    if var_current_book is None:
         embed.add_field(name='There is currently no set book for the book club!', value='\u200b', inline=False)
         embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
     else:
-        CHOSEN_BOOK = meta(str(current_book))
+        CHOSEN_BOOK = meta(str(var_current_book))
         if len(CHOSEN_BOOK['Authors']) == 0:
             embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified',
                             inline=False)
         else:
             embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']),
                             value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
-        thumbnail = cover(current_book[0])
+        thumbnail = cover(var_current_book)
         embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+
+    embed.set_footer(text="Set by {}. 😉 ".format(var_set_by))
     await ctx.send(embed=embed)
 
 
