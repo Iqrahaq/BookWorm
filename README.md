@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/vector/bookworm.png" alt="BookWormIcon" width="200" height="auto">
+  <img src="/img/bookworm.png" alt="BookWormIcon" width="200" height="auto">
 </p>
 
 <h1 align="center" style="font-weight: bold;">
@@ -65,6 +65,8 @@ FYI: The above link opens in current tab!</p>
 <a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
 
  **dwyl** - Quotes via ( <a href="https://github.com/dwyl/quotes">Github</a> ).
+ 
+ **New York Public Library** - No Book Cover Image via <a href="https://www.nypl.org/blog/2014/09/03/generative-ebook-covers">nypl.org</a> ).
 
 ## License
 
