@@ -249,18 +249,29 @@ async def setbook(ctx):
         mycursor.execute(update_status_sql)
         mydb.commit()
 
-        CURRENT_BOOK = BOOKS_RESULTS[BOOK_CHOICE]
+        CURRENT_BOOK = str(BOOKS_RESULTS[BOOK_CHOICE])
 
-        embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author))
-        chosen_book = meta(BOOKS_RESULTS[BOOK_CHOICE])
+        embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author.display_name))
+        print(meta(CURRENT_BOOK))
+        if not meta(CURRENT_BOOK):
+            chosen_book = meta(CURRENT_BOOK, service='openl')
+        else:
+            chosen_book = meta(CURRENT_BOOK)
+
+
         if len(chosen_book['Authors']) == 0:
             embed.add_field(name='{} ({})'.format(chosen_book['Title'], chosen_book['Year']),
                             value='No Authors Specified', inline=False)
         else:
             embed.add_field(name='{} ({})'.format(chosen_book['Title'], chosen_book['Year']),
                             value=', '.join(chosen_book['Authors']), inline=False)
-        thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
-        embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+
+
+        if cover(BOOKS_RESULTS[BOOK_CHOICE]):
+            thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
+            embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+        else:
+            embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
         await ctx.send(embed=embed)
 
     except asyncio.TimeoutError as e:
@@ -345,7 +356,7 @@ async def currentbook(ctx):
     embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
     if current_book[0] is None:
         embed.add_field(name='There is currently no set book for the book club!', value='\u200b', inline=False)
-        embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/vector/bookworm-01.png')
+        embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
     else:
         CHOSEN_BOOK = meta(str(current_book))
         if len(CHOSEN_BOOK['Authors']) == 0:
@@ -380,7 +391,7 @@ async def info(ctx):
     embed = discord.Embed(title='BookWorm (Bot)', url='https://github.com/Iqrahaq/BookWorm',
                           description='A bot to help contribute to book club activities.', color=0x5ae000)
     embed.set_author(name='Iqra Haq', url='https://www.iqrahaq.com')
-    embed.set_thumbnail(url='https://github.com/Iqrahaq/BookWorm/raw/master/vector/bookworm-01.png')
+    embed.set_thumbnail(url='https://github.com/Iqrahaq/BookWorm/raw/master/img/bookworm-01.png')
     embed.add_field(name='How to use?', value='Use the "bw!help" command!', inline=False)
     embed.add_field(name='Am I new?', value='Use the "bw!botsetup" command!', inline=False)
     await ctx.send(embed=embed)
@@ -418,7 +429,7 @@ async def help(ctx):
     embed.add_field(name='bw!currentbook', value='Check to see what the current set book is for book club.', inline=False)
     embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book club.', inline=False)
     embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
-    embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/vector/bookworm-01.png')
+    embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
     embed.set_footer(text="© Iqra Haq (BuraWolf#1158)")
     await ctx.send(embed=embed)
 
