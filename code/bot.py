@@ -252,7 +252,6 @@ async def setbook(ctx):
         CURRENT_BOOK = str(BOOKS_RESULTS[BOOK_CHOICE])
 
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author.display_name))
-        print(meta(CURRENT_BOOK))
         if not meta(CURRENT_BOOK):
             chosen_book = meta(CURRENT_BOOK, service='openl')
         else:
