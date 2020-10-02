@@ -416,7 +416,7 @@ async def help(ctx):
     embed.add_field(name='bw!booksearch', value='Search for a book (Limited to 10 results per search).', inline=False)
     embed.add_field(name='bw!setbook', value='Search for a book (Limited to 10 results per search) and set it as the current book club\'s read.', inline=False)
     embed.add_field(name='bw!currentbook', value='Check to see what the current set book is for book club.', inline=False)
-    embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book clu.!', inline=False)
+    embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book club.', inline=False)
     embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
     embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/vector/bookworm-01.png')
     embed.set_footer(text="© Iqra Haq (BuraWolf#1158)")
