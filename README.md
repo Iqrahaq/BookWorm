@@ -23,7 +23,7 @@
 
 ## Getting Set Up.
 
-<p align="center"><a href="https://discord.com/api/oauth2/authorize?client_id=757386330253819944&permissions=1476918336&scope=bot">Authorise Book Worm Bot to join your server.</a></p>
+<p align="center"><a target="_blank" href="https://discord.com/api/oauth2/authorize?client_id=757386330253819944&permissions=1476918336&scope=bot">Authorise Book Worm Bot to join your server.</a></p>
 
 ## Prerequisites
 
