@@ -66,7 +66,7 @@ FYI: The above link opens in current tab!</p>
 
  **dwyl** - Quotes via ( <a href="https://github.com/dwyl/quotes">Github</a> ).
  
- **New York Public Library** - No Book Cover Image via <a href="https://www.nypl.org/blog/2014/09/03/generative-ebook-covers">nypl.org</a> ).
+ **New York Public Library** - No Book Cover Image via ( <a href="https://www.nypl.org/blog/2014/09/03/generative-ebook-covers">nypl.org</a> ).
 
 ## License
 
