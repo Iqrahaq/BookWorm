@@ -33,9 +33,9 @@ FYI: The above link opens in current tab!</p>
 
 ## Features
 
-**bw!ping** - Returns bot respond time in milliseconds.
+**bw!ping** - Returns my response time in milliseconds.
 
-**bw!info** - Returns information about the bot.
+**bw!info** - Returns information about me.
 
 **bw!botsetup** - If I'm new, use this command to create the required role and entries in my system.
 
