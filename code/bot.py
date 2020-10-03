@@ -56,7 +56,7 @@ async def botsetup(ctx):
             GUILD))
     mydb.commit()
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id INT NOT NULL AUTO_INCREMENT, member_id VARCHAR(100) NOT NULL, book_isbn VARCHAR(100) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id)) ".format(
+        "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id INT NOT NULL AUTO_INCREMENT, member_id VARCHAR(100) NOT NULL, book_isbn VARCHAR(100) NOT NULL, set_by VARCHAR(100) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id)) ".format(
             GUILD, GUILD))
     mydb.commit()
     mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", (str(GUILD)))
@@ -290,13 +290,14 @@ async def bookfinished(ctx):
     var_member_count = current_profile[6]
     var_member_tag = current_profile[3]
 
-    count_check_sql = 'SELECT current_book FROM guilds WHERE guild_id=%s'
+    count_check_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id=%s'
     val = (str(ctx.guild.id))
     mycursor.execute(count_check_sql, val)
     result = mycursor.fetchone()
     # if book status is set and book status matches current book then increment.
-    print(result)
-    if result == 'NULL':
+    var_current_book = result[0]
+    var_set_by = result[1]
+    if var_current_book == 'NULL':
         await ctx.send("But there is no set book for the club...? 🤨")
     elif var_read_status == 1:
         await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
@@ -307,8 +308,8 @@ async def bookfinished(ctx):
         mycursor.execute(update_guild_sql, val)
         mydb.commit()
 
-        update_book_sql = "INSERT INTO BOOKS_{} (book_isbn, member_id) VALUES (%s, %s)".format(ctx.guild.id)
-        val = (str(result[0]), str(ctx.author.mention))
+        update_book_sql = "INSERT INTO BOOKS_{} (book_isbn, member_id, set_by) VALUES (%s, %s, %s)".format(ctx.guild.id)
+        val = (str(var_current_book), str(ctx.author.mention), str(var_set_by))
         mycursor.execute(update_book_sql, val)
         mydb.commit()
 
@@ -380,14 +381,17 @@ async def currentbook(ctx):
 # Returns list of books you've read.
 @client.command()
 async def mybooks(ctx):
-    member_books_sql = 'SELECT book_isbn FROM BOOKS_{} WHERE member_id=%s'.format(ctx.guild.id)
+    member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=%s'.format(ctx.guild.id)
     val = (str(ctx.author.mention))
     mycursor.execute(member_books_sql, val)
-    var_member_books = mycursor.fetchall()
+    results = mycursor.fetchall()
     
-    var_count_books = len(var_member_books)
+    for result in results:
+        book = result[0]
+        var_set_by = result[1]
 
-    for book in var_member_books:
+        var_count_books = len(results)
+
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Read Books:".format(ctx.author.display_name))
         if book is None:
             embed.add_field(name='You haven\'nt read any books in this club yet! ¯\_(ツ)_/¯', value='\u200b', inline=False)
@@ -412,7 +416,7 @@ async def mybooks(ctx):
             else:
                 embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
             embed.set_footer(
-                text="{} total books! 😉".format(
+                text="Set by {}.\n{} total books! 😉".format(var_set_by, 
                     var_count_books))
         await ctx.send(embed=embed)
 
@@ -420,13 +424,16 @@ async def mybooks(ctx):
 # Returns list of previously set books.
 @client.command()
 async def allbooks(ctx):
-    all_books_sql = 'SELECT DISTINCT(book_isbn) FROM BOOKS_{}'.format(ctx.guild.id)
+    all_books_sql = 'SELECT DISTINCT(book_isbn), set_by FROM BOOKS_{}'.format(ctx.guild.id)
     mycursor.execute(all_books_sql)
-    var_all_books = mycursor.fetchall()
+    results = mycursor.fetchall()
     
-    var_count_books = len(var_all_books)
+    for result in results:
+        book = result[0]
+        var_set_by = result[1]
 
-    for book in var_all_books:
+        var_count_books = len(results)
+
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Read Books:".format(ctx.guild.name))
         if book is None:
             embed.add_field(name='You haven\'nt read any books in this club yet! ¯\_(ツ)_/¯', value='\u200b', inline=False)
@@ -450,9 +457,8 @@ async def allbooks(ctx):
                 embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
             else:
                 embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
-            
             embed.set_footer(
-                text="{} total books! 😉".format(
+                text="Set by {}.\n{} total books! 😉".format(var_set_by, 
                     var_count_books))
         await ctx.send(embed=embed)
 
@@ -515,6 +521,8 @@ async def help(ctx):
     embed.add_field(name='bw!setbook', value='Search for a book (Limited to 10 results per search) and sets it as the current book club\'s read.', inline=False)
     embed.add_field(name='bw!currentbook', value='Check to see what the current set book is for book club.', inline=False)
     embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book club.', inline=False)
+    embed.add_field(name='bw!mybooks', value='Returns a list of all the books you\'ve read.', inline=False)
+    embed.add_field(name='bw!allbooks', value='Returns a list of all the books that have been read in the club.', inline=False)
     embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
     embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
     embed.set_footer(text="© Iqra Haq (BuraWolf#1158)")
