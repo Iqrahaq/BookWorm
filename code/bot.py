@@ -411,10 +411,50 @@ async def mybooks(ctx):
                 embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
             else:
                 embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
+            embed.set_footer(
+                text="{} total books! 😉".format(
+                    var_count_books))
         await ctx.send(embed=embed)
 
 
 # Returns list of previously set books.
+@client.command()
+async def allbooks(ctx):
+    all_books_sql = 'SELECT DISTINCT(book_isbn) FROM BOOKS_{}'.format(ctx.guild.id)
+    mycursor.execute(all_books_sql)
+    var_all_books = mycursor.fetchall()
+    
+    var_count_books = len(var_all_books)
+
+    for book in var_all_books:
+        embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Read Books:".format(ctx.guild.name))
+        if book is None:
+            embed.add_field(name='You haven\'nt read any books in this club yet! ¯\_(ツ)_/¯', value='\u200b', inline=False)
+            embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
+        else:
+            current_book = meta(str(book))
+            if len(current_book['Authors']) == 0:
+                embed.add_field(name='{} ({})'.format(current_book['Title'], current_book['Year']), value='No Authors Specified',
+                                inline=False)
+            else:
+                embed.add_field(name='{} ({})'.format(current_book['Title'], current_book['Year']),
+                                value=', '.join(current_book['Authors']), inline=False)
+            
+            if 'ISBN-10' in current_book:
+                cover_img = current_book['ISBN-10']
+            elif 'ISBN-13' in current_book:
+                cover_img = current_book['ISBN-13']
+
+            if cover(cover_img):
+                thumbnail = cover(cover_img)
+                embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+            else:
+                embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
+            
+            embed.set_footer(
+                text="{} total books! 😉".format(
+                    var_count_books))
+        await ctx.send(embed=embed)
 
 
 # Answers with a random quote - using quotes.json.
