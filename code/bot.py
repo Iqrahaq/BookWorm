@@ -74,7 +74,6 @@ async def botsetup(ctx):
 # Check members in book club.
 @client.command(pass_context=True)
 async def bookworms(ctx):
-    empty = True
     role = get(ctx.guild.roles, name=ROLE)
     if role is None:
         await ctx.send(
@@ -93,16 +92,11 @@ async def bookworms(ctx):
                     val = (str(ctx.guild.id), str(member.display_name), str(member.mention))
                     mycursor.execute(new_member_sql, val)
                     mydb.commit()
-                    empty = False
-                else:
-                    empty = False
             else:
                 check_member_sql = 'DELETE FROM GUILD_{} WHERE member_tag=%s'.format(ctx.guild.id)
                 val = (str(member.mention))
                 mycursor.execute(check_member_sql, val)
                 mydb.commit()
-    if empty == True:
-        await ctx.send("Nobody has the role \"{}\"!".format(role))
 
     embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms (Book Club Members)")
     all_members_sql = 'SELECT * FROM GUILD_{}'.format(ctx.guild.id)
