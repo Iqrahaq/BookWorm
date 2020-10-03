@@ -52,8 +52,12 @@ async def botsetup(ctx):
     GUILD = ctx.guild.id
     default_role = get(ctx.guild.roles, name="BookWorm")
     mycursor.execute(
-        "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id INT(100) NOT NULL AUTO_INCREMENT, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, read_status BOOLEAN DEFAULT '0', member_count INT(5) DEFAULT '0', member_books VARCHAR(1000) DEFAULT NULL, PRIMARY KEY(member_id)) ".format(
+        "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id VARCHAR(100) NOT NULL, guild_id VARCHAR(100) DEFAULT NULL, member_name VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_tag VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL, member_timezone VARCHAR(10) DEFAULT NULL, read_status BOOLEAN DEFAULT '0', member_count INT(5) DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id)) ".format(
             GUILD))
+    mydb.commit()
+    mycursor.execute(
+        "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id INT NOT NULL AUTO_INCREMENT, member_id VARCHAR(100) NOT NULL, book_isbn VARCHAR(100) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id)) ".format(
+            GUILD, GUILD))
     mydb.commit()
     mycursor.execute("SELECT * FROM guilds WHERE guild_id=%s", (str(GUILD)))
     guilds_check = mycursor.fetchone()
@@ -76,20 +80,18 @@ async def botsetup(ctx):
 async def bookworms(ctx):
     role = get(ctx.guild.roles, name=ROLE)
     if role is None:
-        await ctx.send(
-            'I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
-        return
+        await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
     else:
         for member in ctx.guild.members:
-            check_member_sql = 'SELECT * FROM GUILD_{} WHERE member_tag=%s'.format(ctx.guild.id)
-            val = (str(member.mention))
-            mycursor.execute(check_member_sql, val)
-            members_check = mycursor.fetchall()
             if role in member.roles:
+                check_member_sql = 'SELECT * FROM GUILD_{} WHERE member_tag=%s'.format(ctx.guild.id)
+                val = (str(member.mention))
+                mycursor.execute(check_member_sql, val)
+                members_check = mycursor.fetchall()
+                print(members_check)
                 if not members_check:
-                    new_member_sql = 'INSERT INTO GUILD_{} (guild_id, member_name, member_tag) VALUES (%s, %s, %s)'.format(
-                        ctx.guild.id)
-                    val = (str(ctx.guild.id), str(member.display_name), str(member.mention))
+                    new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_tag) VALUES (%s, %s, %s, %s)'.format(ctx.guild.id)
+                    val = (str(member.mention), str(ctx.guild.id), str(member.display_name), str(member.mention))
                     mycursor.execute(new_member_sql, val)
                     mydb.commit()
             else:
@@ -98,17 +100,17 @@ async def bookworms(ctx):
                 mycursor.execute(check_member_sql, val)
                 mydb.commit()
 
-    embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms (Book Club Members)")
-    all_members_sql = 'SELECT * FROM GUILD_{}'.format(ctx.guild.id)
-    mycursor.execute(all_members_sql)
-    all_members = mycursor.fetchall()
-    for result in all_members:
-        var_member_name = result[2]
-        var_member_tag = result[3]
-        var_member_count = result[5]
-        embed.add_field(name='• {}'.format(var_member_name),
-                        value='({})\n 📚: {}\n\n'.format(var_member_tag, var_member_count), inline=False)
-    await ctx.send(embed=embed)
+        embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms (Book Club Members)")
+        all_members_sql = 'SELECT * FROM GUILD_{}'.format(ctx.guild.id)
+        mycursor.execute(all_members_sql)
+        all_members = mycursor.fetchall()
+        for result in all_members:
+            var_member_name = result[2]
+            var_member_tag = result[3]
+            var_member_count = result[6]
+            embed.add_field(name='• {}'.format(var_member_name),
+					        value='({})\n 📚: {}\n\n'.format(var_member_tag, var_member_count), inline=False)
+        await ctx.send(embed=embed)
 
 
 # Picks random book club member.
@@ -300,9 +302,14 @@ async def bookfinished(ctx):
         await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
     else:
         var_member_count = var_member_count + 1
-        update_sql = "UPDATE GUILD_{} SET member_count=%s, read_status='1' WHERE member_tag=%s".format(ctx.guild.id)
+        update_guild_sql = "UPDATE GUILD_{} SET member_count=%s, read_status='1' WHERE member_tag=%s".format(ctx.guild.id)
         val = (var_member_count, str(ctx.author.mention))
-        mycursor.execute(update_sql, val)
+        mycursor.execute(update_guild_sql, val)
+        mydb.commit()
+
+        update_book_sql = "INSERT INTO BOOKS_{} (book_isbn, member_id) VALUES (%s, %s)".format(ctx.guild.id)
+        val = (str(result[0]), str(ctx.author.mention))
+        mycursor.execute(update_book_sql, val)
         mydb.commit()
 
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
@@ -360,11 +367,54 @@ async def currentbook(ctx):
         else:
             embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']),
                             value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
-        thumbnail = cover(var_current_book)
-        embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+        
+        if cover(var_current_book):
+            thumbnail = cover(var_current_book)
+            embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+        else:
+            embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
 
     embed.set_footer(text="Set by {}. 😉 ".format(var_set_by))
     await ctx.send(embed=embed)
+
+# Returns list of books you've read.
+@client.command()
+async def mybooks(ctx):
+    member_books_sql = 'SELECT book_isbn FROM BOOKS_{} WHERE member_id=%s'.format(ctx.guild.id)
+    val = (str(ctx.author.mention))
+    mycursor.execute(member_books_sql, val)
+    var_member_books = mycursor.fetchall()
+    
+    var_count_books = len(var_member_books)
+
+    for book in var_member_books:
+        embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Read Books:".format(ctx.author.display_name))
+        if book is None:
+            embed.add_field(name='You haven\'nt read any books in this club yet! ¯\_(ツ)_/¯', value='\u200b', inline=False)
+            embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
+        else:
+            current_book = meta(str(book))
+            if len(current_book['Authors']) == 0:
+                embed.add_field(name='{} ({})'.format(current_book['Title'], current_book['Year']), value='No Authors Specified',
+                                inline=False)
+            else:
+                embed.add_field(name='{} ({})'.format(current_book['Title'], current_book['Year']),
+                                value=', '.join(current_book['Authors']), inline=False)
+            
+            if 'ISBN-10' in current_book:
+                cover_img = current_book['ISBN-10']
+            elif 'ISBN-13' in current_book:
+                cover_img = current_book['ISBN-13']
+
+            if cover(cover_img):
+                thumbnail = cover(cover_img)
+                embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+            else:
+                embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
+        await ctx.send(embed=embed)
+
+
+# Returns list of previously set books.
 
 
 # Answers with a random quote - using quotes.json.
