@@ -82,15 +82,18 @@ async def botsetup(ctx):
         await ctx.send('Role: "Book Worm" already exists.\nPlease make sure you have this role assigned to join Book Club!')
         for member in ctx.guild.members:
             if role in member.roles:
-                check_member_sql = 'SELECT * FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+                check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
                 val = (member.mention,)
                 mycursor_cursor.execute(check_member_sql, val)
                 members_check = mycursor_cursor.fetchone()
                 if not members_check:
-                    new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_id) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
-                    val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
-                    mycursor_cursor.execute(new_member_sql, val)
-                    mycursor.commit()
+                    try:
+                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_id) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
+                        val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
+                        mycursor_cursor.execute(new_member_sql, val)
+                        mycursor.commit()
+                    except Exception as e:
+                        print (e)
     else:
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
         await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
@@ -105,7 +108,7 @@ async def bookworms(ctx):
     else:
         for member in ctx.guild.members:
             if role in member.roles:
-                check_member_sql = 'SELECT * FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+                check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
                 val = (member.mention,)
                 mycursor_cursor.execute(check_member_sql, val)
                 members_check = mycursor_cursor.fetchone()
