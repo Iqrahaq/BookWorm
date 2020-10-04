@@ -19,7 +19,7 @@
   </a>
 </p>
 
-<p align="center">This is a project is currently a work in progress! <br/> BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
+<p align="center"><b> This is a project is currently a work in progress!</b><br/> BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 
 ## Getting Set Up.
 
@@ -52,6 +52,10 @@ FYI: The above link opens in current tab!</p>
 **bw!currentbook** - Check to see what the current set book is for book club.
 
 **bw!bookfinished** - Let BookWorm Bot know that you've finished the current set book for book club.
+
+**bw!mybooks** - Returns a list of all the books you've read.
+
+**bw!allbooks** - Returns a list of all the books that have been read in the club.
 
 **bw!quote** - Returns an inspirational quote.
 
