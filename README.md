@@ -53,6 +53,10 @@ FYI: The above link opens in current tab!</p>
 
 **bw!bookfinished** - Let BookWorm Bot know that you've finished the current set book for book club.
 
+**bw!mybooks** - Returns a list of all the books you've read.
+
+**bw!allbooks** - Returns a list of all the books that have been read in the club.
+
 **bw!quote** - Returns an inspirational quote.
 
 
