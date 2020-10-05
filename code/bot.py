@@ -76,6 +76,7 @@ async def botsetup(ctx):
         val = (GUILD, ctx.guild.name,)
         mycursor_cursor.execute(new_guild_sql, val)
         mycursor.commit()
+
     role = get(ctx.guild.roles, name=ROLE)
 
     if role:
@@ -97,7 +98,6 @@ async def botsetup(ctx):
     else:
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
         await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
-
 
 # Check members in book club.
 @client.command(pass_context=True)
