@@ -3,7 +3,6 @@
 # Include relevant libraries.
 import os
 import sqlite3
-from sqlite3 import Error
 import random
 import json
 import isbnlib
@@ -25,76 +24,62 @@ CURRENT_BOOK = None
 NO_AUTHORS = False
 BOOKS_RESULTS = []
 
+intents = discord.Intents.default()
+intents.members = True
 
-def create_connection():
-    """ create db connection to SQLite db """
-    conn = None
-    try:
-        conn = sqlite3.connect('bookworm.db')
-        print(sqlite3.version)
-        return conn
-    except Error as e:
-        print(e)
-
-mycursor = create_connection()
-mycursor_cursor = mycursor.cursor()
-
+conn = sqlite3.connect("bookworm.db")
+mycursor = conn.cursor()
 
 # Command prefix
-client = commands.Bot(command_prefix='bw!')
+client = commands.Bot(command_prefix='bw!', intents=intents)
 
 # Helpful loading prompt.
 print("Starting bot...")
-
 
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
 
-@client.command()
+@client.command(pass_context=True)
 async def botsetup(ctx):
     GUILD = ctx.guild.id
     default_role = get(ctx.guild.roles, name="BookWorm")
-    mycursor_cursor.execute(
+    mycursor.execute(
         "CREATE TABLE IF NOT EXISTS guilds (guild_id int UNIQUE NOT NULL, guild_name text NOT NULL, current_book int NULL, set_by text NULL, deadline text NULL, PRIMARY KEY(guild_id))")
-    mycursor.commit()
-    mycursor_cursor.execute(
+    conn.commit()
+    mycursor.execute(
         "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id text UNIQUE NOT NULL, guild_id integer NULL, member_name text NOT NULL, member_timezone text NULL, read_status integer DEFAULT '0', member_count integer DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id)) ".format(
             GUILD))
-    mycursor.commit()
-    mycursor_cursor.execute(
+    conn.commit()
+    mycursor.execute(
         "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id text UNIQUE NOT NULL, member_id text NOT NULL, book_isbn int NOT NULL, set_by text NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id)) ".format(
             GUILD, GUILD))
-    mycursor.commit()
+    conn.commit()
     check_guild_sql = "SELECT guild_id FROM guilds WHERE guild_id=?"
     val = (str(GUILD),)
-    mycursor_cursor.execute(check_guild_sql, val)
-    guild_check = mycursor_cursor.fetchone()
+    mycursor.execute(check_guild_sql, val)
+    guild_check = mycursor.fetchone()
     if not guild_check:
         new_guild_sql = "INSERT INTO guilds (guild_id, guild_name) VALUES (?, ?)"
         val = (GUILD, ctx.guild.name,)
-        mycursor_cursor.execute(new_guild_sql, val)
-        mycursor.commit()
+        mycursor.execute(new_guild_sql, val)
+        conn.commit()
 
-    role = get(ctx.guild.roles, name=ROLE)
-
+    role = get(ctx.message.guild.roles, name=ROLE)
     if role:
         await ctx.send('Role: "Book Worm" already exists.\nPlease make sure you have this role assigned to join Book Club!')
         for member in ctx.guild.members:
             if role in member.roles:
                 check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
                 val = (member.mention,)
-                mycursor_cursor.execute(check_member_sql, val)
-                members_check = mycursor_cursor.fetchone()
+                mycursor.execute(check_member_sql, val)
+                members_check = mycursor.fetchall()
                 if not members_check:
-                    try:
-                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_id) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
-                        val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
-                        mycursor_cursor.execute(new_member_sql, val)
-                        mycursor.commit()
-                    except Exception as e:
-                        print (e)
+                    new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_id) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
+                    val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
+                    mycursor.execute(new_member_sql, val)
+                    conn.commit()
     else:
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
         await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
@@ -102,7 +87,7 @@ async def botsetup(ctx):
 # Check members in book club.
 @client.command(pass_context=True)
 async def bookworms(ctx):
-    role = get(ctx.guild.roles, name=ROLE)
+    role = get(ctx.message.guild.roles, name=ROLE)
     if role is None:
         await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
     else:
@@ -110,22 +95,22 @@ async def bookworms(ctx):
             if role in member.roles:
                 check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
                 val = (member.mention,)
-                mycursor_cursor.execute(check_member_sql, val)
-                members_check = mycursor_cursor.fetchone()
+                mycursor.execute(check_member_sql, val)
+                members_check = mycursor.fetchone()
                 if not members_check:
                     new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_id) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
                     val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
-                    mycursor_cursor.execute(new_member_sql, val)
-                    mycursor.commit()
+                    mycursor.execute(new_member_sql, val)
+                    conn.commit()
             else:
                 check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
                 val = (str(member.mention),)
-                mycursor_cursor.execute(check_member_sql, val)
-                mycursor.commit()
+                mycursor.execute(check_member_sql, val)
+                conn.commit()
 
         embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms (Book Club Members)")
-        mycursor_cursor.execute('SELECT member_id, member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
-        all_members = mycursor_cursor.fetchall()
+        mycursor.execute('SELECT member_id, member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
+        all_members = mycursor.fetchall()
         for result in all_members:
             var_member_id = result[0]
             var_member_name = result[1]
@@ -147,8 +132,8 @@ async def pickaworm(ctx):
         return
     else:
         all_members_sql = 'SELECT * FROM GUILD_{}'.format(ctx.guild.id)
-        mycursor_cursor.execute(all_members_sql)
-        all_members = mycursor_cursor.fetchall()
+        mycursor.execute(all_members_sql)
+        all_members = mycursor.fetchall()
         for result in all_members:
             var_member_name = result[2]
             var_member_id = result[0]
@@ -260,12 +245,12 @@ async def setbook(ctx):
         # DB update with new book set
         update_book_sql = "UPDATE guilds SET current_book = ?, set_by = ? WHERE guild_id = ?"
         val = (BOOKS_RESULTS[BOOK_CHOICE], ctx.author.display_name,  ctx.guild.id,)
-        mycursor_cursor.execute(update_book_sql, val)
-        mycursor.commit()
+        mycursor.execute(update_book_sql, val)
+        conn.commit()
 
         update_status_sql = "UPDATE GUILD_{} SET read_status = '0'".format(ctx.guild.id)
-        mycursor_cursor.execute(update_status_sql)
-        mycursor.commit()
+        mycursor.execute(update_status_sql)
+        conn.commit()
 
         CURRENT_BOOK = BOOKS_RESULTS[BOOK_CHOICE]
 
@@ -305,8 +290,8 @@ async def setbook(ctx):
 async def bookfinished(ctx):
     profile_sql = 'SELECT * FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
     val = (ctx.author.mention,)
-    mycursor_cursor.execute(profile_sql, val)
-    current_profile = mycursor_cursor.fetchone()
+    mycursor.execute(profile_sql, val)
+    current_profile = mycursor.fetchone()
     var_member_id = current_profile[0]
     var_member_name = current_profile[2]
     var_read_status = current_profile[4]
@@ -314,8 +299,8 @@ async def bookfinished(ctx):
 
     count_check_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id=?'
     val = (ctx.guild.id,)
-    mycursor_cursor.execute(count_check_sql, val)
-    result = mycursor_cursor.fetchone()
+    mycursor.execute(count_check_sql, val)
+    result = mycursor.fetchone()
     # if book status is set and book status matches current book then increment.
     var_current_book = (str(result[0]))
     var_set_by = result[1]
@@ -327,15 +312,15 @@ async def bookfinished(ctx):
         var_member_count = var_member_count + 1
         update_guild_sql = "UPDATE GUILD_{} SET member_count=?, read_status='1' WHERE member_id=?".format(ctx.guild.id)
         val = (var_member_count, ctx.author.mention,)
-        mycursor_cursor.execute(update_guild_sql, val)
-        mycursor.commit()
+        mycursor.execute(update_guild_sql, val)
+        conn.commit()
 
         id = var_current_book + '_' + var_member_id
 
         update_book_sql = "INSERT INTO BOOKS_{} (book_id, member_id, book_isbn, set_by) VALUES (?, ?, ?, ?)".format(ctx.guild.id)
         val = (id, ctx.author.mention, var_current_book, var_set_by,)
-        mycursor_cursor.execute(update_book_sql, val)
-        mycursor.commit()
+        mycursor.execute(update_book_sql, val)
+        conn.commit()
 
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
         embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_id),
@@ -351,8 +336,8 @@ async def bookfinished(ctx):
 async def profile(ctx):
     profile_sql = 'SELECT * FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
     val = (ctx.author.mention,)
-    mycursor_cursor.execute(profile_sql, val)
-    current_profile = mycursor_cursor.fetchone()
+    mycursor.execute(profile_sql, val)
+    current_profile = mycursor.fetchone()
     var_member_name = current_profile[2]
     var_read_status = current_profile[4]
     var_member_count = current_profile[5]
@@ -375,8 +360,8 @@ async def profile(ctx):
 @client.command()
 async def currentbook(ctx):
     current_book_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
-    mycursor_cursor.execute(current_book_sql)
-    current_book = mycursor_cursor.fetchone()
+    mycursor.execute(current_book_sql)
+    current_book = mycursor.fetchone()
     var_current_book = (str(current_book[0]))
     var_set_by = current_book[1]
 
@@ -407,8 +392,8 @@ async def currentbook(ctx):
 async def mybooks(ctx):
     member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=?'.format(ctx.guild.id)
     val = (ctx.author.mention,)
-    mycursor_cursor.execute(member_books_sql, val)
-    results = mycursor_cursor.fetchall()
+    mycursor.execute(member_books_sql, val)
+    results = mycursor.fetchall()
 
     if results:
         for result in results:
@@ -451,8 +436,8 @@ async def mybooks(ctx):
 @client.command()
 async def allbooks(ctx):
     all_books_sql = 'SELECT DISTINCT(book_isbn), set_by FROM BOOKS_{}'.format(ctx.guild.id)
-    mycursor_cursor.execute(all_books_sql)
-    results = mycursor_cursor.fetchall()
+    mycursor.execute(all_books_sql)
+    results = mycursor.fetchall()
     
     if results:
         for result in results:
