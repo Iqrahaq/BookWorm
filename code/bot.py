@@ -80,6 +80,12 @@ async def botsetup(ctx):
                     val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
                     mycursor.execute(new_member_sql, val)
                     conn.commit()
+            else:
+                check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+                val = (str(member.mention),)
+                mycursor.execute(check_member_sql, val)
+                conn.commit()
+
     else:
         await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
         await ctx.send('Role created: "Book Worm".\nPlease make sure you have this role assigned to join Book Club!')
