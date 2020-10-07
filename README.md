@@ -39,7 +39,9 @@ FYI: The above link opens in current tab!</p>
 
 **bw!botsetup** - If I'm new, use this command to create the required role and entries in my system.
 
-**bw!bookworms** - Returns a list of the current book club members and their book club information.
+**bw!bookworms** - Lists the current book club members and their book club information.
+
+**bw!topfive** - Lists the top 5 book worms (book club members).
 
 **bw!pickaworm** - Picks a random bookworm (book club member).
 
