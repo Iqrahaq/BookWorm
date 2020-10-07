@@ -114,7 +114,7 @@ async def bookworms(ctx):
                 mycursor.execute(check_member_sql, val)
                 conn.commit()
 
-        embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms (Book Club Members)")
+        embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms")
         mycursor.execute('SELECT member_id, member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
         all_members = mycursor.fetchall()
         for result in all_members:
@@ -123,8 +123,26 @@ async def bookworms(ctx):
             var_member_count = result[2]
             embed.add_field(name='• {}'.format(var_member_name),
 					        value='({})\n 📚: {}\n\n'.format(var_member_id, var_member_count), inline=False)
+        embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
         await ctx.send(embed=embed)
-
+        
+# Retrieves top 5 members.
+@client.command(pass_context=True)
+async def topfive(ctx):   
+    embed = discord.Embed(colour=discord.Colour.green(), title="TOP 5 Book Worms")
+    mycursor.execute('SELECT member_id, member_name, member_count FROM GUILD_{} ORDER BY member_count DESC LIMIT 5'.format(ctx.guild.id))
+    all_members = mycursor.fetchall()
+    n = 1
+    for result in all_members:
+        var_member_id = result[0]
+        var_member_name = result[1]
+        var_member_count = result[2]
+        embed.add_field(name='{0}• {1}'.format(n, var_member_name),
+                        value='({})\n 📚: {}\n\n'.format(var_member_id, var_member_count), inline=False)
+        n = n + 1
+    embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
+    await ctx.send(embed=embed)
+    n = 1
 
 # Picks random book club member.
 @client.command()
@@ -153,6 +171,7 @@ async def pickaworm(ctx):
     random.seed(a=None)
     response = random.choice(MEMBERS)
     embed.description = (response)
+    embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
     await ctx.send(embed=embed)
 
 
@@ -543,7 +562,8 @@ async def help(ctx):
     embed.add_field(name='bw!ping', value='Returns my response time in milliseconds.', inline=False)
     embed.add_field(name='bw!info', value='Returns information about me.', inline=False)
     embed.add_field(name='bw!botsetup', value='If I\'m new, use this command to create the required role and entries in my system.', inline=False)
-    embed.add_field(name='bw!bookworms', value='Returns a list of the current book club members and their book club information.', inline=False)
+    embed.add_field(name='bw!bookworms', value='Lists the current book club members and their book club information.', inline=False)
+    embed.add_field(name='bw!topfive', value='Lists the top 5 book worms (book club members).', inline=False)
     embed.add_field(name='bw!pickaworm', value='Picks a random bookworm (book club member).', inline=False)
     embed.add_field(name='bw!profile', value='Returns your book club profile.', inline=False)
     embed.add_field(name='bw!booksearch', value='Search for a book (Limited to 10 results per search).', inline=False)
