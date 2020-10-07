@@ -261,13 +261,15 @@ async def setbook(ctx):
         CURRENT_BOOK = BOOKS_RESULTS[BOOK_CHOICE]
 
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Chosen Book:".format(ctx.author.display_name))
-        if not meta(CURRENT_BOOK):
+        if meta(CURRENT_BOOK):
+            chosen_book = meta(CURRENT_BOOK)
+        elif not meta(CURRENT_BOOK):
             chosen_book = meta(CURRENT_BOOK, service='openl')
         else:
-            chosen_book = meta(CURRENT_BOOK)
+            chosen_book = meta(CURRENT_BOOK, service='wiki')
 
-
-        if len(chosen_book['Authors']) == 0:
+            
+        if not ''.join(chosen_book['Authors']) or (len(chosen_book['Authors']) == 0):
             embed.add_field(name='{} ({})'.format(chosen_book['Title'], chosen_book['Year']),
                             value='No Authors Specified', inline=False)
         else:
@@ -276,8 +278,8 @@ async def setbook(ctx):
 
 
         if cover(BOOKS_RESULTS[BOOK_CHOICE]):
-            thumbnail = cover(BOOKS_RESULTS[BOOK_CHOICE])
-            embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+            thumbnail = cover(str(BOOKS_RESULTS[BOOK_CHOICE]))
+            embed.set_thumbnail(url='{}'.format(str(thumbnail['thumbnail'])))
         else:
             embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
         await ctx.send(embed=embed)
@@ -368,25 +370,33 @@ async def currentbook(ctx):
     current_book_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
     mycursor.execute(current_book_sql)
     current_book = mycursor.fetchone()
-    var_current_book = (str(current_book[0]))
+    CURRENT_BOOK = (str(current_book[0]))
     var_set_by = current_book[1]
 
     embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
-    if var_current_book is None:
+    if CURRENT_BOOK is None:
         embed.add_field(name='There is currently no set book for the book club!', value='\u200b', inline=False)
         embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
     else:
-        CHOSEN_BOOK = meta(var_current_book)
-        if len(CHOSEN_BOOK['Authors']) == 0:
-            embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']), value='No Authors Specified',
-                            inline=False)
+        if meta(CURRENT_BOOK):
+            chosen_book = meta(CURRENT_BOOK)
+        elif not meta(CURRENT_BOOK):
+            chosen_book = meta(CURRENT_BOOK, service='openl')
         else:
-            embed.add_field(name='{} ({})'.format(CHOSEN_BOOK['Title'], CHOSEN_BOOK['Year']),
-                            value=', '.join(CHOSEN_BOOK['Authors']), inline=False)
-        
-        if cover(var_current_book):
-            thumbnail = cover(var_current_book)
-            embed.set_thumbnail(url='{}'.format(thumbnail['thumbnail']))
+            chosen_book = meta(CURRENT_BOOK, service='wiki')
+
+            
+        if not ''.join(chosen_book['Authors']) or (len(chosen_book['Authors']) == 0):
+            embed.add_field(name='{} ({})'.format(chosen_book['Title'], chosen_book['Year']),
+                            value='No Authors Specified', inline=False)
+        else:
+            embed.add_field(name='{} ({})'.format(chosen_book['Title'], chosen_book['Year']),
+                            value=', '.join(chosen_book['Authors']), inline=False)
+
+
+        if cover(CURRENT_BOOK):
+            thumbnail = cover(str(CURRENT_BOOK))
+            embed.set_thumbnail(url='{}'.format(str(thumbnail['thumbnail'])))
         else:
             embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/no_book_cover.jpg')
 
