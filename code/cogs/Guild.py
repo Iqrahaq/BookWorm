@@ -6,6 +6,7 @@ from discord.utils import get
 import sqlite3
 import isbnlib
 from isbnlib import *
+import random
 import asyncio
 
 
@@ -33,29 +34,34 @@ class Guild(commands.Cog):
             for member in ctx.guild.members:
                 if role in member.roles:
                     check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
-                    val = (member.mention,)
+                    val = (member.id,)
                     mycursor.execute(check_member_sql, val)
                     members_check = mycursor.fetchone()
                     if not members_check:
-                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_id) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
-                        val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
+                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
+                        val = (member.id, ctx.guild.id, member.display_name, member.mention,)
                         mycursor.execute(new_member_sql, val)
+                        conn.commit()
+                    else:
+                        update_member_sql = 'UPDATE GUILD_{} SET member_name=?, member_mention=? WHERE member_id=?'.format(ctx.guild.id)
+                        val = (member.display_name, member.mention, member.id,)
+                        mycursor.execute(update_member_sql, val)
                         conn.commit()
                 else:
                     check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
-                    val = (str(member.mention),)
+                    val = (str(member.id),)
                     mycursor.execute(check_member_sql, val)
                     conn.commit()
 
             embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms")
-            mycursor.execute('SELECT member_id, member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
+            mycursor.execute('SELECT member_mention, member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
             all_members = mycursor.fetchall()
             for result in all_members:
-                var_member_id = result[0]
+                var_member_mention = result[0]
                 var_member_name = result[1]
                 var_member_count = result[2]
                 embed.add_field(name='• {}'.format(var_member_name),
-					            value='({})\n 📚: {}\n\n'.format(var_member_id, var_member_count), inline=False)
+					            value='({})\n 📚: {}\n\n'.format(var_member_mention, var_member_count), inline=False)
             embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
             await ctx.send(embed=embed)
 
@@ -63,15 +69,15 @@ class Guild(commands.Cog):
     @commands.command()
     async def topfive(self, ctx):
         embed = discord.Embed(colour=discord.Colour.green(), title="TOP 5 Book Worms")
-        mycursor.execute('SELECT member_id, member_name, member_count FROM GUILD_{} ORDER BY member_count DESC LIMIT 5'.format(ctx.guild.id))
+        mycursor.execute('SELECT member_mention, member_name, member_count FROM GUILD_{} ORDER BY member_count DESC LIMIT 5'.format(ctx.guild.id))
         all_members = mycursor.fetchall()
         n = 1
         for result in all_members:
-            var_member_id = result[0]
+            var_member_mention = result[0]
             var_member_name = result[1]
             var_member_count = result[2]
             embed.add_field(name='{0}• {1}'.format(n, var_member_name),
-                            value='({})\n 📚: {}\n\n'.format(var_member_id, var_member_count), inline=False)
+                            value='({})\n 📚: {}\n\n'.format(var_member_mention, var_member_count), inline=False)
             n = n + 1
         embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
         await ctx.send(embed=embed)
@@ -89,13 +95,13 @@ class Guild(commands.Cog):
                 'I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
             return
         else:
-            all_members_sql = 'SELECT * FROM GUILD_{}'.format(ctx.guild.id)
+            all_members_sql = 'SELECT member_name, member_mention FROM GUILD_{}'.format(ctx.guild.id)
             mycursor.execute(all_members_sql)
             all_members = mycursor.fetchall()
             for result in all_members:
-                var_member_name = result[2]
-                var_member_id = result[0]
-                MEMBERS.append('○ {} ({}).\n'.format(var_member_name, var_member_id))
+                var_member_name = result[0]
+                var_member_mention = result[1]
+                MEMBERS.append('○ {} ({}).\n'.format(var_member_name, var_member_mention))
                 empty = False
 
         if empty == True:

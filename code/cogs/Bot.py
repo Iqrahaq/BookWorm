@@ -18,7 +18,7 @@ class Bot(commands.Cog):
     """ a class filled with all commands related to the bot. """
 
     def __init__(self, client):
-        self.client = client
+        self.client = client  
 
     # First command to be run before all other commands (to help with setting up DB and Role).
     @commands.command()
@@ -29,7 +29,7 @@ class Bot(commands.Cog):
             "CREATE TABLE IF NOT EXISTS guilds (guild_id int UNIQUE NOT NULL, guild_name text NOT NULL, current_book int NULL, set_by text NULL, deadline text NULL, PRIMARY KEY(guild_id))")
         conn.commit()
         mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id text UNIQUE NOT NULL, guild_id integer NULL, member_name text NOT NULL, member_timezone text NULL, read_status integer DEFAULT '0', member_count integer DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id)) ".format(
+            "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id text UNIQUE NOT NULL, guild_id integer NULL, member_name text NOT NULL, member_mention text NOT NULL, member_timezone text NULL, read_status integer DEFAULT '0', member_count integer DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id)) ".format(
                 GUILD))
         conn.commit()
         mycursor.execute(
@@ -52,17 +52,22 @@ class Bot(commands.Cog):
             for member in ctx.guild.members:
                 if role in member.roles:
                     check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
-                    val = (member.mention,)
+                    val = (member.id,)
                     mycursor.execute(check_member_sql, val)
                     members_check = mycursor.fetchall()
                     if not members_check:
-                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_id) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
-                        val = (member.mention, ctx.guild.id, member.display_name, member.mention,)
+                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
+                        val = (member.id, ctx.guild.id, member.display_name, member.mention,)
                         mycursor.execute(new_member_sql, val)
+                        conn.commit()
+                    else:
+                        update_member_sql = 'UPDATE GUILD_{} SET member_name=?, member_mention=? WHERE member_id=?'.format(ctx.guild.id)
+                        val = (member.display_name, member.mention, member.id, )
+                        mycursor.execute(update_member_sql, val)
                         conn.commit()
                 else:
                     check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
-                    val = (str(member.mention),)
+                    val = (str(member.id),)
                     mycursor.execute(check_member_sql, val)
                     conn.commit()
 
@@ -131,14 +136,13 @@ class Bot(commands.Cog):
         embed.add_field(name='How to use?', value='Use the "bw!help" command!', inline=False)
         embed.add_field(name='Am I new?', value='Use the "bw!botsetup" command!', inline=False)
         await ctx.send(embed=embed)
-        return
+        
 
 
     # Ping to answer with the ms latency, helpful for troubleshooting.
     @commands.command()
     async def ping(self, ctx):
         await ctx.send(f'Pong! {round(self.client.latency * 1000)}ms ')
-        return
 
 
 

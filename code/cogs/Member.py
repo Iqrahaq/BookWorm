@@ -21,17 +21,17 @@ class Member(commands.Cog):
     # View bookworm profile.
     @commands.command()
     async def profile(self, ctx):
-        profile_sql = 'SELECT * FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
-        val = (ctx.author.mention,)
+        profile_sql = 'SELECT member_name, read_status, member_count, member_mention FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+        val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
         current_profile = mycursor.fetchone()
-        var_member_name = current_profile[2]
-        var_read_status = current_profile[4]
-        var_member_count = current_profile[5]
-        var_member_id = current_profile[0]
+        var_member_name = current_profile[0]
+        var_read_status = current_profile[1]
+        var_member_count = current_profile[2]
+        var_member_mention = current_profile[3]
 
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
-        embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_id),
+        embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_mention),
                         inline=False)
         if var_read_status == 1:
             embed.set_footer(text="Well done! You've finished the current set book for the club! 🥳")
@@ -46,14 +46,15 @@ class Member(commands.Cog):
     # Add to completed books only if book is set within status.
     @commands.command()
     async def bookfinished(self, ctx):
-        profile_sql = 'SELECT * FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
-        val = (ctx.author.mention,)
+        profile_sql = 'SELECT member_mention, member_name, read_status, member_count, member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+        val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
         current_profile = mycursor.fetchone()
-        var_member_id = current_profile[0]
-        var_member_name = current_profile[2]
-        var_read_status = current_profile[4]
-        var_member_count = current_profile[5]
+        var_member_mention = current_profile[0]
+        var_member_name = current_profile[1]
+        var_read_status = current_profile[2]
+        var_member_count = current_profile[3]
+        var_member_id = current_profile[4]
 
         count_check_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id=?'
         val = (ctx.guild.id,)
@@ -69,19 +70,19 @@ class Member(commands.Cog):
         else:
             var_member_count = var_member_count + 1
             update_guild_sql = "UPDATE GUILD_{} SET member_count=?, read_status='1' WHERE member_id=?".format(ctx.guild.id)
-            val = (var_member_count, ctx.author.mention,)
+            val = (var_member_count, ctx.author.id,)
             mycursor.execute(update_guild_sql, val)
             conn.commit()
 
             id = var_current_book + '_' + var_member_id
 
             update_book_sql = "INSERT INTO BOOKS_{} (book_id, member_id, book_isbn, set_by) VALUES (?, ?, ?, ?)".format(ctx.guild.id)
-            val = (id, ctx.author.mention, var_current_book, var_set_by,)
+            val = (id, ctx.author.id, var_current_book, var_set_by,)
             mycursor.execute(update_book_sql, val)
             conn.commit()
 
             embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
-            embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_id),
+            embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_mention),
                             inline=False)
             embed.set_footer(text="Well done! You've finished the current set book for the club! 🥳")
             thumbnail = ctx.author.avatar_url
@@ -92,7 +93,7 @@ class Member(commands.Cog):
     @commands.command()
     async def mybooks(self, ctx):
         member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=?'.format(ctx.guild.id)
-        val = (ctx.author.mention,)
+        val = (ctx.author.id,)
         mycursor.execute(member_books_sql, val)
         results = mycursor.fetchall()
 
