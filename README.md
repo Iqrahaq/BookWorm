@@ -62,6 +62,10 @@ FYI: The above link opens in current tab!</p>
 
 **bw!quote** - Returns an inspirational quote.
 
+## Future Implementations
+
+**Paginating bw!bookworms list** - Not all the bookworms show, so the fix for that at the moment is bw!profile. The plan is to hopefully paginate bw!bookworms to show the full list.
+
 
 
 ## Authors
