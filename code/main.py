@@ -53,7 +53,7 @@ async def custom_status():
                     book_name = book[0]
                     book_authors = book[1]
                     book_url = book[5]
-                    await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.listening, state="Listening", name="'{0}' by {1}. 🎧".format(book_name, book_authors)))
+                    await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.listening, name=" the Audio Book: '{0}' by {1}. 🎧".format(book_name, book_authors)))
                     await asyncio.sleep(15000)
 
 @client.event
