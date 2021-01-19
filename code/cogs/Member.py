@@ -27,6 +27,8 @@ class Member(commands.Cog):
     # View bookworm profile.
     @commands.command()
     async def profile(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         profile_sql = 'SELECT member_name, read_status, member_count, member_mention FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
@@ -52,6 +54,8 @@ class Member(commands.Cog):
     # Add to completed books only if book is set within status.
     @commands.command()
     async def bookfinished(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         profile_sql = 'SELECT member_mention, member_name, read_status, member_count, member_id FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
@@ -98,6 +102,8 @@ class Member(commands.Cog):
     # Returns list of books you've read.
     @commands.command()
     async def mybooks(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(member_books_sql, val)

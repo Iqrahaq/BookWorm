@@ -33,6 +33,8 @@ class Guild(commands.Cog):
     # Check members in book club.
     @commands.command()
     async def bookworms(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         role = get(ctx.message.guild.roles, name=ROLE)
         if role is None:
             await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
@@ -91,6 +93,8 @@ class Guild(commands.Cog):
     # Picks random book club member.
     @commands.command()
     async def pickaworm(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         MEMBERS = {}
         empty = True
         role = get(ctx.guild.roles, name=ROLE)
@@ -123,6 +127,8 @@ class Guild(commands.Cog):
     # Set a book for the book club.
     @commands.command()
     async def setbook(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         BOOKS_RESULTS[:] = []
         await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
 
@@ -221,6 +227,8 @@ class Guild(commands.Cog):
     # Return current book club reading status.
     @commands.command()
     async def currentbook(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         current_book_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
         mycursor.execute(current_book_sql)
         current_book = mycursor.fetchone()
@@ -260,6 +268,8 @@ class Guild(commands.Cog):
     # Returns list of previously set books.
     @commands.command()
     async def allbooks(self, ctx):
+        mycursor.execute("SET NAMES utf8mb4;")
+        conn.commit()
         all_books_sql = 'SELECT DISTINCT(book_isbn), set_by FROM BOOKS_{}'.format(ctx.guild.id)
         mycursor.execute(all_books_sql)
         results = mycursor.fetchall()

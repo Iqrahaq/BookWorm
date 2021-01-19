@@ -31,14 +31,16 @@ class Bot(commands.Cog):
     async def botsetup(self, ctx):
         GUILD = ctx.guild.id
         default_role = get(ctx.guild.roles, name="BookWorm")
-        mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS guilds (guild_id VARCHAR(50) UNIQUE NOT NULL, guild_name VARCHAR(255) NOT NULL, current_book VARCHAR(50) NULL, set_by VARCHAR(255) NULL, deadline VARCHAR(255) NULL, PRIMARY KEY(guild_id));")
+        mycursor.execute("SET NAMES utf8mb4;")
         conn.commit()
         mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id VARCHAR(255) UNIQUE NOT NULL, guild_id VARCHAR(50) NULL, member_name VARCHAR(255) NOT NULL, member_mention VARCHAR(255) NOT NULL, member_timezone VARCHAR(255) NULL, read_status VARCHAR(50) DEFAULT '0', member_count VARCHAR(50) DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id));".format(GUILD))
+            "CREATE TABLE IF NOT EXISTS guilds (guild_id VARCHAR(50) UNIQUE NOT NULL, guild_name VARCHAR(255) NOT NULL, current_book VARCHAR(50) NULL, set_by VARCHAR(255) NULL, deadline VARCHAR(255) NULL, PRIMARY KEY(guild_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;")
         conn.commit()
         mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id VARCHAR(255) UNIQUE NOT NULL, member_id VARCHAR(255) NOT NULL, book_isbn VARCHAR(50) NOT NULL, set_by VARCHAR(255) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id));".format(GUILD, GUILD))
+            "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id VARCHAR(255) UNIQUE NOT NULL, guild_id VARCHAR(50) NULL, member_name VARCHAR(255) NOT NULL, member_mention VARCHAR(255) NOT NULL, member_timezone VARCHAR(255) NULL, read_status VARCHAR(50) DEFAULT '0', member_count VARCHAR(50) DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;".format(GUILD))
+        conn.commit()
+        mycursor.execute(
+            "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id VARCHAR(255) UNIQUE NOT NULL, member_id VARCHAR(255) NOT NULL, book_isbn VARCHAR(50) NOT NULL, set_by VARCHAR(255) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;".format(GUILD, GUILD))
         conn.commit()
         check_guild_sql = "SELECT guild_id FROM guilds WHERE guild_id=%s;"
         val = (str(GUILD),)
