@@ -3,13 +3,19 @@
 import discord
 from discord.ext import commands
 from discord.utils import get
-import sqlite3
+import os
+import mysql.connector
 import isbnlib
 from isbnlib import *
 import asyncio
 
 ROLE = "Book Worm"
-conn = sqlite3.connect("bookworm.db")
+conn = mysql.connector.connect(
+    host = os.getenv('HOST'),
+    user = os.getenv('USER'),
+    password = os.getenv('PASSWORD'),
+    database = os.getenv('DATABASE')
+)
 mycursor = conn.cursor()
 
 class Member(commands.Cog):

@@ -3,7 +3,8 @@
 import discord
 from discord.ext import commands
 from discord.utils import get
-import sqlite3
+import os
+import mysql.connector
 import isbnlib
 from isbnlib import *
 import random
@@ -15,7 +16,12 @@ MEMBERS = []
 CURRENT_BOOK = None
 NO_AUTHORS = False
 BOOKS_RESULTS = []
-conn = sqlite3.connect("bookworm.db")
+conn = mysql.connector.connect(
+    host = os.getenv('HOST'),
+    user = os.getenv('USER'),
+    password = os.getenv('PASSWORD'),
+    database = os.getenv('DATABASE')
+)
 mycursor = conn.cursor()
 
 class Guild(commands.Cog):
@@ -54,13 +60,14 @@ class Guild(commands.Cog):
                     conn.commit()
 
             embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms")
-            mycursor.execute('SELECT member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
+            mycursor.execute('SELECT member_mention, member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
             all_members = mycursor.fetchall()
             for result in all_members:
+                var_member_mention = result[0]
                 var_member_name = result[1]
                 var_member_count = result[2]
                 embed.add_field(name='• {}'.format(var_member_name),
-					            value='({})\n 📚: {}\n\n'.format(var_member_count), inline=False)
+					            value='({})\n 📚: {}\n\n'.format(var_member_mention, var_member_count), inline=False)
             embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
             await ctx.send(embed=embed)
 
