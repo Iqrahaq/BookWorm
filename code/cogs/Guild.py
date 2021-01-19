@@ -236,7 +236,7 @@ class Guild(commands.Cog):
         var_set_by = current_book[1]
 
         embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Current Read:".format(ctx.guild))
-        if CURRENT_BOOK is None:
+        if CURRENT_BOOK == "None":
             embed.add_field(name='There is currently no set book for the book club!', value='\u200b', inline=False)
             embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
         else:
