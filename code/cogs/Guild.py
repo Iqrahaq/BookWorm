@@ -12,7 +12,7 @@ import asyncio
 
 
 ROLE = "Book Worm"
-MEMBERS = []
+MEMBERS = {}
 CURRENT_BOOK = None
 NO_AUTHORS = False
 BOOKS_RESULTS = []
@@ -44,7 +44,7 @@ class Guild(commands.Cog):
                     mycursor.execute(check_member_sql, val)
                     members_check = mycursor.fetchone()
                     if not members_check:
-                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (%s, %i, %s, %s)'.format(ctx.guild.id)
+                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (%s, %s, %s, %s)'.format(ctx.guild.id)
                         val = (member.id, ctx.guild.id, member.display_name, member.mention,)
                         mycursor.execute(new_member_sql, val)
                         conn.commit()
@@ -60,14 +60,13 @@ class Guild(commands.Cog):
                     conn.commit()
 
             embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms")
-            mycursor.execute('SELECT member_mention, member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
+            mycursor.execute('SELECT member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
             all_members = mycursor.fetchall()
             for result in all_members:
-                var_member_mention = result[0]
-                var_member_name = result[1]
-                var_member_count = result[2]
+                var_member_name = result[0]
+                var_member_count = result[1]
                 embed.add_field(name='• {}'.format(var_member_name),
-					            value='({})\n 📚: {}\n\n'.format(var_member_mention, var_member_count), inline=False)
+					            value='📚: {}\n\n'.format(var_member_count), inline=False)
             embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
             await ctx.send(embed=embed)
 
@@ -75,15 +74,14 @@ class Guild(commands.Cog):
     @commands.command()
     async def topfive(self, ctx):
         embed = discord.Embed(colour=discord.Colour.green(), title="TOP 5 Book Worms")
-        mycursor.execute('SELECT member_mention, member_name, member_count FROM GUILD_{} ORDER BY member_count DESC LIMIT 5'.format(ctx.guild.id))
+        mycursor.execute('SELECT member_name, member_count FROM GUILD_{} ORDER BY member_count DESC LIMIT 5'.format(ctx.guild.id))
         all_members = mycursor.fetchall()
         n = 1
         for result in all_members:
-            var_member_mention = result[0]
-            var_member_name = result[1]
-            var_member_count = result[2]
+            var_member_name = result[0]
+            var_member_count = result[1]
             embed.add_field(name='{0}• {1}'.format(n, var_member_name),
-                            value='({})\n 📚: {}\n\n'.format(var_member_mention, var_member_count), inline=False)
+                            value='📚: {}\n\n'.format(var_member_count), inline=False)
             n = n + 1
         embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
         await ctx.send(embed=embed)
@@ -93,7 +91,7 @@ class Guild(commands.Cog):
     # Picks random book club member.
     @commands.command()
     async def pickaworm(self, ctx):
-        MEMBERS[:] = []
+        MEMBERS = {}
         empty = True
         role = get(ctx.guild.roles, name=ROLE)
         if role is None:
@@ -101,13 +99,13 @@ class Guild(commands.Cog):
                 'I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
             return
         else:
-            all_members_sql = 'SELECT member_name, member_mention FROM GUILD_{}'.format(ctx.guild.id)
+            all_members_sql = 'SELECT member_id, member_name FROM GUILD_{}'.format(ctx.guild.id)
             mycursor.execute(all_members_sql)
             all_members = mycursor.fetchall()
             for result in all_members:
-                var_member_name = result[0]
-                var_member_mention = result[1]
-                MEMBERS.append('○ {} ({}).\n'.format(var_member_name, var_member_mention))
+                var_member_id = result[0]
+                var_member_name = result[1]
+                MEMBERS[var_member_id] = var_member_name
                 empty = False
 
         if empty == True:
@@ -115,9 +113,10 @@ class Guild(commands.Cog):
 
         embed = discord.Embed(colour=discord.Colour.green(), title="Random Book Worm Chosen:")
         random.seed(a=None)
-        response = random.choice(MEMBERS)
-        embed.description = (response)
-        embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
+        response = random.choice(list(MEMBERS.items()))
+        embed.description = ('○ {}.\n'.format(response[1]))
+        var_member = await ctx.guild.fetch_member(response[0])
+        embed.set_thumbnail(url="https://cdn.discordapp.com/avatars/{0.id}/{0.avatar}.png?size=1024".format(var_member))
         await ctx.send(embed=embed)
 
 
@@ -179,7 +178,7 @@ class Guild(commands.Cog):
             BOOK_CHOICE = (int(current_message.content) - 1)
 
             # DB update with new book set
-            update_book_sql = "UPDATE guilds SET current_book = %i, set_by = %s WHERE guild_id = %i"
+            update_book_sql = "UPDATE guilds SET current_book = %s, set_by = %s WHERE guild_id = %s"
             val = (BOOKS_RESULTS[BOOK_CHOICE], ctx.author.display_name,  ctx.guild.id,)
             mycursor.execute(update_book_sql, val)
             conn.commit()

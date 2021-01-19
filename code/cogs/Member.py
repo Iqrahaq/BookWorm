@@ -62,7 +62,7 @@ class Member(commands.Cog):
         var_member_count = current_profile[3]
         var_member_id = current_profile[4]
 
-        count_check_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id=%i'
+        count_check_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id=%s'
         val = (ctx.guild.id,)
         mycursor.execute(count_check_sql, val)
         result = mycursor.fetchone()
@@ -75,14 +75,14 @@ class Member(commands.Cog):
             await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
         else:
             var_member_count = var_member_count + 1
-            update_guild_sql = "UPDATE GUILD_{} SET member_count=%i, read_status='1' WHERE member_id=%s".format(ctx.guild.id)
+            update_guild_sql = "UPDATE GUILD_{} SET member_count=%s, read_status='1' WHERE member_id=%s".format(ctx.guild.id)
             val = (var_member_count, ctx.author.id,)
             mycursor.execute(update_guild_sql, val)
             conn.commit()
 
             id = var_current_book + '_' + var_member_id
 
-            update_book_sql = "INSERT INTO BOOKS_{} (book_id, member_id, book_isbn, set_by) VALUES (%s, %s, %i, %s)".format(ctx.guild.id)
+            update_book_sql = "INSERT INTO BOOKS_{} (book_id, member_id, book_isbn, set_by) VALUES (%s, %s, %s, %s)".format(ctx.guild.id)
             val = (id, ctx.author.id, var_current_book, var_set_by,)
             mycursor.execute(update_book_sql, val)
             conn.commit()

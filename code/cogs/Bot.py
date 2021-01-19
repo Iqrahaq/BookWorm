@@ -32,20 +32,20 @@ class Bot(commands.Cog):
         GUILD = ctx.guild.id
         default_role = get(ctx.guild.roles, name="BookWorm")
         mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS guilds (guild_id INT(50) UNIQUE NOT NULL, guild_name VARCHAR(255) NOT NULL, current_book INT(50) NULL, set_by VARCHAR(255) NULL, deadline VARCHAR(255) NULL, PRIMARY KEY(guild_id))")
+            "CREATE TABLE IF NOT EXISTS guilds (guild_id VARCHAR(50) UNIQUE NOT NULL, guild_name VARCHAR(255) NOT NULL, current_book VARCHAR(50) NULL, set_by VARCHAR(255) NULL, deadline VARCHAR(255) NULL, PRIMARY KEY(guild_id));")
         conn.commit()
         mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id VARCHAR(255) UNIQUE NOT NULL, guild_id INT(50) NULL, member_name VARCHAR(255) NOT NULL, member_mention VARCHAR(255) NOT NULL, member_timezone VARCHAR(255) NULL, read_status INT(50) DEFAULT '0', member_count INT(50) DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id)) ".format(GUILD))
+            "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id VARCHAR(255) UNIQUE NOT NULL, guild_id VARCHAR(50) NULL, member_name VARCHAR(255) NOT NULL, member_mention VARCHAR(255) NOT NULL, member_timezone VARCHAR(255) NULL, read_status VARCHAR(50) DEFAULT '0', member_count VARCHAR(50) DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id));".format(GUILD))
         conn.commit()
         mycursor.execute(
-            "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id VARCHAR(255) UNIQUE NOT NULL, member_id VARCHAR(255) NOT NULL, book_isbn INT(50) NOT NULL, set_by VARCHAR(255) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id)) ".format(GUILD, GUILD))
+            "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id VARCHAR(255) UNIQUE NOT NULL, member_id VARCHAR(255) NOT NULL, book_isbn VARCHAR(50) NOT NULL, set_by VARCHAR(255) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id));".format(GUILD, GUILD))
         conn.commit()
-        check_guild_sql = "SELECT guild_id FROM guilds WHERE guild_id=%s"
+        check_guild_sql = "SELECT guild_id FROM guilds WHERE guild_id=%s;"
         val = (str(GUILD),)
         mycursor.execute(check_guild_sql, val)
         guild_check = mycursor.fetchone()
         if not guild_check:
-            new_guild_sql = "INSERT INTO guilds (guild_id, guild_name) VALUES (%i, %s)"
+            new_guild_sql = "INSERT INTO guilds (guild_id, guild_name) VALUES (%s, %s);"
             val = (GUILD, ctx.guild.name,)
             mycursor.execute(new_guild_sql, val)
             conn.commit()
@@ -55,22 +55,22 @@ class Bot(commands.Cog):
             await ctx.send('Role: "Book Worm" already exists.\nPlease make sure you have this role assigned to join Book Club!')
             for member in ctx.guild.members:
                 if role in member.roles:
-                    check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
+                    check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=%s;'.format(ctx.guild.id)
                     val = (member.id,)
                     mycursor.execute(check_member_sql, val)
                     members_check = mycursor.fetchall()
                     if not members_check:
-                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (%s, %i, %s, %s)'.format(ctx.guild.id)
+                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (%s, %s, %s, %s);'.format(ctx.guild.id)
                         val = (member.id, ctx.guild.id, member.display_name, member.mention,)
                         mycursor.execute(new_member_sql, val)
                         conn.commit()
                     else:
-                        update_member_sql = 'UPDATE GUILD_{} SET member_name=%s, member_mention=%s WHERE member_id=%s'.format(ctx.guild.id)
+                        update_member_sql = 'UPDATE GUILD_{} SET member_name=%s, member_mention=%s WHERE member_id=%s;'.format(ctx.guild.id)
                         val = (member.display_name, member.mention, member.id, )
                         mycursor.execute(update_member_sql, val)
                         conn.commit()
                 else:
-                    check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
+                    check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=%s;'.format(ctx.guild.id)
                     val = (str(member.id),)
                     mycursor.execute(check_member_sql, val)
                     conn.commit()
@@ -111,7 +111,7 @@ class Bot(commands.Cog):
             else:
                 await ctx.send("I couldn't find any books. ¯\\_(ツ)_/¯")
         except asyncio.TimeoutError as e:
-            prINT(e)
+            print(e)
             await ctx.send("Response timed out.")
 
 
