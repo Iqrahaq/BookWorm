@@ -27,7 +27,7 @@ class Member(commands.Cog):
     # View bookworm profile.
     @commands.command()
     async def profile(self, ctx):
-        profile_sql = 'SELECT member_name, read_status, member_count, member_mention FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+        profile_sql = 'SELECT member_name, read_status, member_count, member_mention FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
         current_profile = mycursor.fetchone()
@@ -52,7 +52,7 @@ class Member(commands.Cog):
     # Add to completed books only if book is set within status.
     @commands.command()
     async def bookfinished(self, ctx):
-        profile_sql = 'SELECT member_mention, member_name, read_status, member_count, member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+        profile_sql = 'SELECT member_mention, member_name, read_status, member_count, member_id FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
         current_profile = mycursor.fetchone()
@@ -62,7 +62,7 @@ class Member(commands.Cog):
         var_member_count = current_profile[3]
         var_member_id = current_profile[4]
 
-        count_check_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id=?'
+        count_check_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id=%i'
         val = (ctx.guild.id,)
         mycursor.execute(count_check_sql, val)
         result = mycursor.fetchone()
@@ -75,14 +75,14 @@ class Member(commands.Cog):
             await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
         else:
             var_member_count = var_member_count + 1
-            update_guild_sql = "UPDATE GUILD_{} SET member_count=?, read_status='1' WHERE member_id=?".format(ctx.guild.id)
+            update_guild_sql = "UPDATE GUILD_{} SET member_count=%i, read_status='1' WHERE member_id=%s".format(ctx.guild.id)
             val = (var_member_count, ctx.author.id,)
             mycursor.execute(update_guild_sql, val)
             conn.commit()
 
             id = var_current_book + '_' + var_member_id
 
-            update_book_sql = "INSERT INTO BOOKS_{} (book_id, member_id, book_isbn, set_by) VALUES (?, ?, ?, ?)".format(ctx.guild.id)
+            update_book_sql = "INSERT INTO BOOKS_{} (book_id, member_id, book_isbn, set_by) VALUES (%s, %s, %i, %s)".format(ctx.guild.id)
             val = (id, ctx.author.id, var_current_book, var_set_by,)
             mycursor.execute(update_book_sql, val)
             conn.commit()
@@ -98,7 +98,7 @@ class Member(commands.Cog):
     # Returns list of books you've read.
     @commands.command()
     async def mybooks(self, ctx):
-        member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=?'.format(ctx.guild.id)
+        member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(member_books_sql, val)
         results = mycursor.fetchall()

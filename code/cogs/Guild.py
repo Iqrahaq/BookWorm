@@ -39,22 +39,22 @@ class Guild(commands.Cog):
         else:
             for member in ctx.guild.members:
                 if role in member.roles:
-                    check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+                    check_member_sql = 'SELECT member_id FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
                     val = (member.id,)
                     mycursor.execute(check_member_sql, val)
                     members_check = mycursor.fetchone()
                     if not members_check:
-                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (?, ?, ?, ?)'.format(ctx.guild.id)
+                        new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (%s, %i, %s, %s)'.format(ctx.guild.id)
                         val = (member.id, ctx.guild.id, member.display_name, member.mention,)
                         mycursor.execute(new_member_sql, val)
                         conn.commit()
                     else:
-                        update_member_sql = 'UPDATE GUILD_{} SET member_name=?, member_mention=? WHERE member_id=?'.format(ctx.guild.id)
+                        update_member_sql = 'UPDATE GUILD_{} SET member_name=%s, member_mention=%s WHERE member_id=%s'.format(ctx.guild.id)
                         val = (member.display_name, member.mention, member.id,)
                         mycursor.execute(update_member_sql, val)
                         conn.commit()
                 else:
-                    check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=?'.format(ctx.guild.id)
+                    check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
                     val = (str(member.id),)
                     mycursor.execute(check_member_sql, val)
                     conn.commit()
@@ -179,7 +179,7 @@ class Guild(commands.Cog):
             BOOK_CHOICE = (int(current_message.content) - 1)
 
             # DB update with new book set
-            update_book_sql = "UPDATE guilds SET current_book = ?, set_by = ? WHERE guild_id = ?"
+            update_book_sql = "UPDATE guilds SET current_book = %i, set_by = %s WHERE guild_id = %i"
             val = (BOOKS_RESULTS[BOOK_CHOICE], ctx.author.display_name,  ctx.guild.id,)
             mycursor.execute(update_book_sql, val)
             conn.commit()
