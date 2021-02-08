@@ -22,11 +22,6 @@
 <p align="center">BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 <p align="center">DISCLAIMER: I am currently prioritising my University degree but feel free to message any issues and I will get back to you when I can.</p>
 
-## Getting Set Up.
-
-<p align="center"><a target="blank" href="https://discord.com/api/oauth2/authorize?client_id=757386330253819944&permissions=1476917312&scope=bot">Authorise Book Worm Bot to join your server.</a> <br/>
-FYI: The above link opens in current tab!</p>
-
 ## Prerequisites
 
 <p align="center"> Command Prefix = "bw!"</p>
