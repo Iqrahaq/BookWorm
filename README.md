@@ -22,12 +22,16 @@
 <p align="center">BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 <p align="center">DISCLAIMER: I am currently prioritising my University degree but feel free to message any issues and I will get back to you when I can.</p>
 
-## Prerequisites
+## Getting Started
 
-<p align="center"> Command Prefix = "bw!"</p>
+**Currently you'll need to self-host this bot as hosting costs aren't feasible.**
+
+See [setup guide - setup.md](setup.md) for guidance on setting this bot up for self-hosting.
 
 
-## Features
+## Usage, Commands & Features
+
+**Command Prefix = "bw!"**
 
 **bw!ping** - Returns my response time in milliseconds.
 
@@ -57,27 +61,31 @@
 
 **bw!quote** - Returns an inspirational quote.
 
+
 ## Future Implementations
 
 **Paginating bw!bookworms list** - Not all the bookworms show, so the fix for that at the moment is bw!profile. The plan is to hopefully paginate bw!bookworms to show the full list.
 
+**Docker Image** - A docker image for simple and easy deployment should exist. This will reduce hosting costs for users and make this more accessible.
 
 
-## Authors
-**Iqra Haq** - Student @ Northumbria University, Newcastle upon Tyne, UK.
+## Authors & Contributors
 
-## Credits
-**joezhuang** - Vector Designer @ Vecteezy (
+### Iqra Haq - Author - Student @ Northumbria University, Newcastle upon Tyne, UK.
+
+**livkx** - Contributions/Bugfixes
+
+
+## Credits & Acknowledgments
+ **joezhuang** - Vector Designer @ Vecteezy (
 <a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
 
  **dwyl** - Quotes via ( <a href="https://github.com/dwyl/quotes">Github</a> ).
  
  **New York Public Library** - No Book Cover Image via ( <a href="https://www.nypl.org/blog/2014/09/03/generative-ebook-covers">nypl.org</a> ).
 
+ **The Rainbow Mosque** - For inspiring me to create this bot.
+
+
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
-
-## Acknowledgments
-**The Rainbow Mosque** - For inspiring me to create this bot.
-

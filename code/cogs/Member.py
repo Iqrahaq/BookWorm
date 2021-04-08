@@ -75,10 +75,10 @@ class Member(commands.Cog):
         var_set_by = result[1]
         if var_current_book == 'NULL':
             await ctx.send("But there is no set book for the club...? 🤨")
-        elif var_read_status == 1:
+        elif int(var_read_status) == 1:
             await ctx.send("You've already told me that you've finished the set book for the club! 🤪")
         else:
-            var_member_count = var_member_count + 1
+            var_member_count = int(var_member_count) + 1
             update_guild_sql = "UPDATE GUILD_{} SET member_count=%s, read_status='1' WHERE member_id=%s".format(ctx.guild.id)
             val = (var_member_count, ctx.author.id,)
             mycursor.execute(update_guild_sql, val)
