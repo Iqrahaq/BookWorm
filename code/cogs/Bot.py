@@ -10,27 +10,27 @@ from isbnlib import *
 import random
 import json
 import asyncio
+from ../main import initdb, dbcursor
 
 ROLE = "Book Worm"
-connection = None
 
 def initdb():
-    return = mysql.connector.connect(
+    return mysql.connector.connect(
         host = os.getenv('HOST'),
         user = os.getenv('USER'),
         password = os.getenv('PASSWORD'),
         database = os.getenv('DATABASE')
     )
 
-def dbcursor():
+def dbcursor(conn):
     try:
-        connection.ping(reconnect=True, attempts=3, delay=5)
+        conn.ping(reconnect=True, attempts=3, delay=5)
     except mysql.connector.Error as err:
-        connection = initdb()
-    return connection.cursor()
+        conn = initdb()
+    return conn.cursor()
 
 connection = initdb()
-mycursor = dbcursor()
+mycursor = dbcursor(connection)
 
 class Bot(commands.Cog):
     """ a class filled with all commands related to the bot. """

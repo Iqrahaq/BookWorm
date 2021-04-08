@@ -10,7 +10,6 @@ from isbnlib import *
 import asyncio
 
 ROLE = "Book Worm"
-connection = None
 
 def initdb():
     return mysql.connector.connect(
@@ -20,15 +19,15 @@ def initdb():
         database = os.getenv('DATABASE')
     )
 
-def dbcursor():
+def dbcursor(conn):
     try:
-        connection.ping(reconnect=True, attempts=3, delay=5)
+        conn.ping(reconnect=True, attempts=3, delay=5)
     except mysql.connector.Error as err:
-        connection = initdb()
-    return connection.cursor()
+        conn = initdb()
+    return conn.cursor()
 
 connection = initdb()
-mycursor = dbcursor()
+mycursor = dbcursor(connection)
 
 class Member(commands.Cog):
     """ a class filled with all commands related to the members. """
