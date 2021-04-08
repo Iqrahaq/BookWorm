@@ -16,13 +16,25 @@ MEMBERS = {}
 CURRENT_BOOK = None
 NO_AUTHORS = False
 BOOKS_RESULTS = []
-conn = mysql.connector.connect(
-    host = os.getenv('HOST'),
-    user = os.getenv('USER'),
-    password = os.getenv('PASSWORD'),
-    database = os.getenv('DATABASE')
-)
-mycursor = conn.cursor()
+connection = None
+
+def initdb():
+    return = mysql.connector.connect(
+        host = os.getenv('HOST'),
+        user = os.getenv('USER'),
+        password = os.getenv('PASSWORD'),
+        database = os.getenv('DATABASE')
+    )
+
+def dbcursor():
+    try:
+        connection.ping(reconnect=True, attempts=3, delay=5)
+    except mysql.connector.Error as err:
+        connection = initdb()
+    return connection.cursor()
+
+connection = initdb()
+mycursor = dbcursor()
 
 class Guild(commands.Cog):
     """ a class filled with all commands related to the guild. """
@@ -34,7 +46,7 @@ class Guild(commands.Cog):
     @commands.command()
     async def bookworms(self, ctx):
         mycursor.execute("SET NAMES utf8mb4;")
-        conn.commit()
+        connection.commit()
         role = get(ctx.message.guild.roles, name=ROLE)
         if role is None:
             await ctx.send('I can\'t find any "Book Worms"!\nAre you sure you have the correct role? Try running "bw!rolesetup".')
@@ -49,17 +61,17 @@ class Guild(commands.Cog):
                         new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (%s, %s, %s, %s)'.format(ctx.guild.id)
                         val = (member.id, ctx.guild.id, member.display_name, member.mention,)
                         mycursor.execute(new_member_sql, val)
-                        conn.commit()
+                        connection.commit()
                     else:
                         update_member_sql = 'UPDATE GUILD_{} SET member_name=%s, member_mention=%s WHERE member_id=%s'.format(ctx.guild.id)
                         val = (member.display_name, member.mention, member.id,)
                         mycursor.execute(update_member_sql, val)
-                        conn.commit()
+                        connection.commit()
                 else:
                     check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
                     val = (str(member.id),)
                     mycursor.execute(check_member_sql, val)
-                    conn.commit()
+                    connection.commit()
 
             embed = discord.Embed(colour=discord.Colour.green(), title="Book Worms")
             mycursor.execute('SELECT member_name, member_count FROM GUILD_{}'.format(ctx.guild.id))
@@ -94,7 +106,7 @@ class Guild(commands.Cog):
     @commands.command()
     async def pickaworm(self, ctx):
         mycursor.execute("SET NAMES utf8mb4;")
-        conn.commit()
+        connection.commit()
         MEMBERS = {}
         empty = True
         role = get(ctx.guild.roles, name=ROLE)
@@ -128,7 +140,7 @@ class Guild(commands.Cog):
     @commands.command()
     async def setbook(self, ctx):
         mycursor.execute("SET NAMES utf8mb4;")
-        conn.commit()
+        connection.commit()
         BOOKS_RESULTS[:] = []
         await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
 
@@ -187,11 +199,11 @@ class Guild(commands.Cog):
             update_book_sql = "UPDATE guilds SET current_book = %s, set_by = %s WHERE guild_id = %s"
             val = (BOOKS_RESULTS[BOOK_CHOICE], ctx.author.display_name,  ctx.guild.id,)
             mycursor.execute(update_book_sql, val)
-            conn.commit()
+            connection.commit()
 
             update_status_sql = "UPDATE GUILD_{} SET read_status = '0'".format(ctx.guild.id)
             mycursor.execute(update_status_sql)
-            conn.commit()
+            connection.commit()
 
             CURRENT_BOOK = BOOKS_RESULTS[BOOK_CHOICE]
 
@@ -228,7 +240,7 @@ class Guild(commands.Cog):
     @commands.command()
     async def currentbook(self, ctx):
         mycursor.execute("SET NAMES utf8mb4;")
-        conn.commit()
+        connection.commit()
         current_book_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
         mycursor.execute(current_book_sql)
         current_book = mycursor.fetchone()
@@ -269,7 +281,7 @@ class Guild(commands.Cog):
     @commands.command()
     async def allbooks(self, ctx):
         mycursor.execute("SET NAMES utf8mb4;")
-        conn.commit()
+        connection.commit()
         all_books_sql = 'SELECT DISTINCT(book_isbn), set_by FROM BOOKS_{}'.format(ctx.guild.id)
         mycursor.execute(all_books_sql)
         results = mycursor.fetchall()
