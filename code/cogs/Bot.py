@@ -10,7 +10,6 @@ from isbnlib import *
 import random
 import json
 import asyncio
-from ../main import initdb, dbcursor
 
 ROLE = "Book Worm"
 
