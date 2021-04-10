@@ -13,26 +13,26 @@ import asyncio
 
 ROLE = "Book Worm"
 
+def initdb():
+    return mysql.connector.connect(
+        host = os.getenv('HOST'),
+        user = os.getenv('USER'),
+        password = os.getenv('PASSWORD'),
+        database = os.getenv('DATABASE')
+    )
+
 class Bot(commands.Cog):
     """ a class filled with all commands related to the bot. """
 
     def __init__(self, client):
         self.client = client
-        self.connection = None
+        self.connection = initdb()
     
-    def initdb():
-        return mysql.connector.connect(
-            host = os.getenv('HOST'),
-            user = os.getenv('USER'),
-            password = os.getenv('PASSWORD'),
-            database = os.getenv('DATABASE')
-        )
-
-    def dbcursor():
+    def dbcursor(self):
         try:
             self.connection.ping(reconnect=True, attempts=3, delay=5)
         except mysql.connector.Error as err:
-            self.connection = self.initdb()
+            self.connection = initdb()
         return self.connection.cursor()
 
     # First command to be run before all other commands (to help with setting up DB and Role).

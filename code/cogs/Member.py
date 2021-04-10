@@ -11,22 +11,22 @@ import asyncio
 
 ROLE = "Book Worm"
 
+def initdb():
+    return mysql.connector.connect(
+        host = os.getenv('HOST'),
+        user = os.getenv('USER'),
+        password = os.getenv('PASSWORD'),
+        database = os.getenv('DATABASE')
+    )
+
 class Member(commands.Cog):
     """ a class filled with all commands related to the members. """
 
     def __init__(self, client):
         self.client = client
-        self.connection = None
-    
-    def initdb():
-        return mysql.connector.connect(
-            host = os.getenv('HOST'),
-            user = os.getenv('USER'),
-            password = os.getenv('PASSWORD'),
-            database = os.getenv('DATABASE')
-        )
+        self.connection = initdb()
 
-    def dbcursor():
+    def dbcursor(self):
         try:
             self.connection.ping(reconnect=True, attempts=3, delay=5)
         except mysql.connector.Error as err:
