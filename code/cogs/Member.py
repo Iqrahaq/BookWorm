@@ -11,7 +11,14 @@ import asyncio
 
 ROLE = "Book Worm"
 
-def initdb():
+class Member(commands.Cog):
+    """ a class filled with all commands related to the members. """
+
+    def __init__(self, client):
+        self.client = client
+        self.connection = None
+    
+    def initdb():
     return mysql.connector.connect(
         host = os.getenv('HOST'),
         user = os.getenv('USER'),
@@ -19,27 +26,19 @@ def initdb():
         database = os.getenv('DATABASE')
     )
 
-def dbcursor(conn):
-    try:
-        conn.ping(reconnect=True, attempts=3, delay=5)
-    except mysql.connector.Error as err:
-        conn = initdb()
-    return conn.cursor()
-
-connection = initdb()
-mycursor = dbcursor(connection)
-
-class Member(commands.Cog):
-    """ a class filled with all commands related to the members. """
-
-    def __init__(self, client):
-        self.client = client
+    def dbcursor():
+        try:
+            self.connection.ping(reconnect=True, attempts=3, delay=5)
+        except mysql.connector.Error as err:
+            self.connection = initdb()
+        return self.connection.cursor()
 
     # View bookworm profile.
     @commands.command()
     async def profile(self, ctx):
+        mycursor = dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
-        connection.commit()
+        self.connection.commit()
         profile_sql = 'SELECT member_name, read_status, member_count, member_mention FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
@@ -65,8 +64,9 @@ class Member(commands.Cog):
     # Add to completed books only if book is set within status.
     @commands.command()
     async def bookfinished(self, ctx):
+        mycursor = dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
-        connection.commit()
+        self.connection.commit()
         profile_sql = 'SELECT member_mention, member_name, read_status, member_count, member_id FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(profile_sql, val)
@@ -93,14 +93,14 @@ class Member(commands.Cog):
             update_guild_sql = "UPDATE GUILD_{} SET member_count=%s, read_status='1' WHERE member_id=%s".format(ctx.guild.id)
             val = (var_member_count, ctx.author.id,)
             mycursor.execute(update_guild_sql, val)
-            connection.commit()
+            self.connection.commit()
 
             id = var_current_book + '_' + var_member_id
 
             update_book_sql = "INSERT INTO BOOKS_{} (book_id, member_id, book_isbn, set_by) VALUES (%s, %s, %s, %s)".format(ctx.guild.id)
             val = (id, ctx.author.id, var_current_book, var_set_by,)
             mycursor.execute(update_book_sql, val)
-            connection.commit()
+            self.connection.commit()
 
             embed = discord.Embed(colour=discord.Colour.green(), title="{}'s Profile:".format(ctx.author.display_name))
             embed.add_field(name='{}\n(📚: {})'.format(var_member_name, var_member_count), value='{}'.format(var_member_mention),
@@ -113,8 +113,9 @@ class Member(commands.Cog):
     # Returns list of books you've read.
     @commands.command()
     async def mybooks(self, ctx):
+        mycursor = dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
-        connection.commit()
+        self.connection.commit()
         member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=%s'.format(ctx.guild.id)
         val = (ctx.author.id,)
         mycursor.execute(member_books_sql, val)

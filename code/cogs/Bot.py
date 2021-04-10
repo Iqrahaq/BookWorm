@@ -13,7 +13,14 @@ import asyncio
 
 ROLE = "Book Worm"
 
-def initdb():
+class Bot(commands.Cog):
+    """ a class filled with all commands related to the bot. """
+
+    def __init__(self, client):
+        self.client = client
+        self.connection = None
+    
+    def initdb():
     return mysql.connector.connect(
         host = os.getenv('HOST'),
         user = os.getenv('USER'),
@@ -21,38 +28,30 @@ def initdb():
         database = os.getenv('DATABASE')
     )
 
-def dbcursor(conn):
-    try:
-        conn.ping(reconnect=True, attempts=3, delay=5)
-    except mysql.connector.Error as err:
-        conn = initdb()
-    return conn.cursor()
-
-connection = initdb()
-mycursor = dbcursor(connection)
-
-class Bot(commands.Cog):
-    """ a class filled with all commands related to the bot. """
-
-    def __init__(self, client):
-        self.client = client  
+    def dbcursor():
+        try:
+            self.connection.ping(reconnect=True, attempts=3, delay=5)
+        except mysql.connector.Error as err:
+            self.connection = initdb()
+        return self.connection.cursor()
 
     # First command to be run before all other commands (to help with setting up DB and Role).
     @commands.command()
     async def botsetup(self, ctx):
+        mycursor = dbcursor()
         GUILD = ctx.guild.id
         default_role = get(ctx.guild.roles, name="BookWorm")
         mycursor.execute("SET NAMES utf8mb4;")
-        connection.commit()
+        self.connection.commit()
         mycursor.execute(
             "CREATE TABLE IF NOT EXISTS guilds (guild_id VARCHAR(50) UNIQUE NOT NULL, guild_name VARCHAR(255) NOT NULL, current_book VARCHAR(50) NULL, set_by VARCHAR(255) NULL, deadline VARCHAR(255) NULL, PRIMARY KEY(guild_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;")
-        connection.commit()
+        self.connection.commit()
         mycursor.execute(
             "CREATE TABLE IF NOT EXISTS GUILD_{} (member_id VARCHAR(255) UNIQUE NOT NULL, guild_id VARCHAR(50) NULL, member_name VARCHAR(255) NOT NULL, member_mention VARCHAR(255) NOT NULL, member_timezone VARCHAR(255) NULL, read_status VARCHAR(50) DEFAULT '0', member_count VARCHAR(50) DEFAULT '0', PRIMARY KEY(member_id), FOREIGN KEY (guild_id) REFERENCES guilds(guild_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;".format(GUILD))
-        connection.commit()
+        self.connection.commit()
         mycursor.execute(
             "CREATE TABLE IF NOT EXISTS BOOKS_{} (book_id VARCHAR(255) UNIQUE NOT NULL, member_id VARCHAR(255) NOT NULL, book_isbn VARCHAR(50) NOT NULL, set_by VARCHAR(255) NOT NULL, PRIMARY KEY(book_id), FOREIGN KEY (member_id) REFERENCES GUILD_{}(member_id)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;".format(GUILD, GUILD))
-        connection.commit()
+        self.connection.commit()
         check_guild_sql = "SELECT guild_id FROM guilds WHERE guild_id=%s;"
         val = (str(GUILD),)
         mycursor.execute(check_guild_sql, val)
@@ -61,7 +60,7 @@ class Bot(commands.Cog):
             new_guild_sql = "INSERT INTO guilds (guild_id, guild_name) VALUES (%s, %s);"
             val = (GUILD, ctx.guild.name,)
             mycursor.execute(new_guild_sql, val)
-            connection.commit()
+            self.connection.commit()
 
         role = get(ctx.message.guild.roles, name=ROLE)
         if role:
@@ -76,17 +75,17 @@ class Bot(commands.Cog):
                         new_member_sql = 'INSERT INTO GUILD_{} (member_id, guild_id, member_name, member_mention) VALUES (%s, %s, %s, %s);'.format(ctx.guild.id)
                         val = (member.id, ctx.guild.id, member.display_name, member.mention,)
                         mycursor.execute(new_member_sql, val)
-                        connection.commit()
+                        self.connection.commit()
                     else:
                         update_member_sql = 'UPDATE GUILD_{} SET member_name=%s, member_mention=%s WHERE member_id=%s;'.format(ctx.guild.id)
                         val = (member.display_name, member.mention, member.id, )
                         mycursor.execute(update_member_sql, val)
-                        connection.commit()
+                        self.connection.commit()
                 else:
                     check_member_sql = 'DELETE FROM GUILD_{} WHERE member_id=%s;'.format(ctx.guild.id)
                     val = (str(member.id),)
                     mycursor.execute(check_member_sql, val)
-                    connection.commit()
+                    self.connection.commit()
 
         else:
             await ctx.guild.create_role(name=ROLE, colour=discord.Colour(0x00C09A))
