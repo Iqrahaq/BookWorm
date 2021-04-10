@@ -32,13 +32,13 @@ class Bot(commands.Cog):
         try:
             self.connection.ping(reconnect=True, attempts=3, delay=5)
         except mysql.connector.Error as err:
-            self.connection = initdb()
+            self.connection = self.initdb()
         return self.connection.cursor()
 
     # First command to be run before all other commands (to help with setting up DB and Role).
     @commands.command()
     async def botsetup(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         GUILD = ctx.guild.id
         default_role = get(ctx.guild.roles, name="BookWorm")
         mycursor.execute("SET NAMES utf8mb4;")

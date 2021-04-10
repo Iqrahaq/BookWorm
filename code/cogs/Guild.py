@@ -36,13 +36,13 @@ class Guild(commands.Cog):
         try:
             self.connection.ping(reconnect=True, attempts=3, delay=5)
         except mysql.connector.Error as err:
-            self.connection = initdb()
+            self.connection = self.initdb()
         return self.connection.cursor()
 
     # Check members in book club.
     @commands.command()
     async def bookworms(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         role = get(ctx.message.guild.roles, name=ROLE)
@@ -85,7 +85,7 @@ class Guild(commands.Cog):
     # Retrieves top 5 members.
     @commands.command()
     async def topfive(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         embed = discord.Embed(colour=discord.Colour.green(), title="TOP 5 Book Worms")
         mycursor.execute('SELECT member_name, member_count FROM GUILD_{} ORDER BY member_count DESC LIMIT 5'.format(ctx.guild.id))
         all_members = mycursor.fetchall()
@@ -104,7 +104,7 @@ class Guild(commands.Cog):
     # Picks random book club member.
     @commands.command()
     async def pickaworm(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         MEMBERS = {}
@@ -139,7 +139,7 @@ class Guild(commands.Cog):
     # Set a book for the book club.
     @commands.command()
     async def setbook(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         BOOKS_RESULTS[:] = []
@@ -240,7 +240,7 @@ class Guild(commands.Cog):
     # Return current book club reading status.
     @commands.command()
     async def currentbook(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         current_book_sql = 'SELECT current_book, set_by FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
@@ -282,7 +282,7 @@ class Guild(commands.Cog):
     # Returns list of previously set books.
     @commands.command()
     async def allbooks(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         all_books_sql = 'SELECT DISTINCT(book_isbn), set_by FROM BOOKS_{}'.format(ctx.guild.id)

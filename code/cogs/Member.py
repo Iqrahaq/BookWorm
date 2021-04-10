@@ -30,13 +30,13 @@ class Member(commands.Cog):
         try:
             self.connection.ping(reconnect=True, attempts=3, delay=5)
         except mysql.connector.Error as err:
-            self.connection = initdb()
+            self.connection = self.initdb()
         return self.connection.cursor()
 
     # View bookworm profile.
     @commands.command()
     async def profile(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         profile_sql = 'SELECT member_name, read_status, member_count, member_mention FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
@@ -64,7 +64,7 @@ class Member(commands.Cog):
     # Add to completed books only if book is set within status.
     @commands.command()
     async def bookfinished(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         profile_sql = 'SELECT member_mention, member_name, read_status, member_count, member_id FROM GUILD_{} WHERE member_id=%s'.format(ctx.guild.id)
@@ -113,7 +113,7 @@ class Member(commands.Cog):
     # Returns list of books you've read.
     @commands.command()
     async def mybooks(self, ctx):
-        mycursor = dbcursor()
+        mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
         member_books_sql = 'SELECT book_isbn, set_by FROM BOOKS_{} WHERE member_id=%s'.format(ctx.guild.id)
