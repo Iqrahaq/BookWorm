@@ -21,12 +21,12 @@ class Bot(commands.Cog):
         self.connection = None
     
     def initdb():
-    return mysql.connector.connect(
-        host = os.getenv('HOST'),
-        user = os.getenv('USER'),
-        password = os.getenv('PASSWORD'),
-        database = os.getenv('DATABASE')
-    )
+        return mysql.connector.connect(
+            host = os.getenv('HOST'),
+            user = os.getenv('USER'),
+            password = os.getenv('PASSWORD'),
+            database = os.getenv('DATABASE')
+        )
 
     def dbcursor():
         try:
