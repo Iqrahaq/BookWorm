@@ -67,8 +67,7 @@
 **Iqra Haq** - Student @ Northumbria University, Newcastle upon Tyne, UK.
 
 ## Credits
-**joezhuang** - Vector Designer @ Vecteezy (
-<a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
+**joezhuang** - Vector Designer @ Vecteezy (<a href="https://www.vecteezy.com/vector-art/268526-bookworm-vector">Bookworm Vector by Vecteezy</a> & <a href="https://josephzhuangart.wordpress.com/">Joseph Zhuang's Personal Website</a>).
 
  **dwyl** - Quotes via ( <a href="https://github.com/dwyl/quotes">Github</a> ).
  
