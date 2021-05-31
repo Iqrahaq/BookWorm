@@ -7,16 +7,12 @@
 </h1>
 
 <p align="center">
-  
-  <a href="https://img.shields.io/badge/version-1.0.0-blue">
-    <img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version">
-  </a>
-  <a href"=https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FIqrahaq%2FBookWorm%2F">
-    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FIqrahaq%2FBookWorm%2F" alt="Hits">
-   </a>
-  <a href="https://img.shields.io/github/license/Iqrahaq/BookWorm">
-    <img src="https://img.shields.io/github/license/Iqrahaq/BookWorm" alt="License">
-  </a>
+  <a href="https://github.com/Iqrahaq/BookWorm/blob/main/LICENSE">
+    <img alt="GitHub license" src="https://img.shields.io/github/license/Iqrahaq/BookWorm">
+  </a>  
+  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Iqrahaq/BookWorm">
+  <img alt="Codacy grade" src="https://img.shields.io/codacy/grade/1407e0340ca94b1c8c8949e4dbba9cfb">
+  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/Iqrahaq/BookWorm">
 </p>
 
 <p align="center">BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
