@@ -3,10 +3,12 @@
 import discord
 from discord.ext import commands
 import os
+import sys
 from dotenv import load_dotenv
 import asyncio
 import csv
 import time
+import traceback
 
 # Use dotenv to conceal token.
 load_dotenv()
@@ -35,6 +37,7 @@ client.remove_command('help')
 @client.event
 async def on_command_error(ctx, error):
     await ctx.send(f'Error. Try bw!help ({error})')
+    traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 # Load cogs
 for filename in os.listdir('./cogs'):
@@ -45,7 +48,7 @@ for filename in os.listdir('./cogs'):
 # Set custom status for bot.
 async def custom_status():
     while True:
-        with open('books.csv', 'r') as books_file:
+        with open(os.path.dirname(__file__) + '../books.csv', 'r') as books_file:
             books = csv.reader(books_file)
             next(books_file)
             for book in books:
