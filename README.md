@@ -7,24 +7,31 @@
 </h1>
 
 <p align="center">
-  <a href="https://github.com/Iqrahaq/BookWorm/blob/main/LICENSE">
-    <img alt="GitHub license" src="https://img.shields.io/github/license/Iqrahaq/BookWorm">
-  </a>  
-  <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Iqrahaq/BookWorm">
-  <img alt="Codacy grade" src="https://img.shields.io/codacy/grade/1407e0340ca94b1c8c8949e4dbba9cfb">
-  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/Iqrahaq/BookWorm">
-  <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FIqrahaq%2FBookWorm&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=views&edge_flat=false"/></a>
+  
+  <a href="https://img.shields.io/badge/version-1.0.0-blue">
+    <img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version">
+  </a>
+  <a href"=https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FIqrahaq%2FBookWorm%2F">
+    <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FIqrahaq%2FBookWorm%2F" alt="Hits">
+   </a>
+  <a href="https://img.shields.io/github/license/Iqrahaq/BookWorm">
+    <img src="https://img.shields.io/github/license/Iqrahaq/BookWorm" alt="License">
+  </a>
 </p>
 
 <p align="center">BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 <p align="center">DISCLAIMER: I am currently prioritising my University degree but feel free to message any issues and I will get back to you when I can.</p>
 
-## Prerequisites
+## Getting Started
 
-<p align="center"> Command Prefix = "bw!"</p>
+**Currently you'll need to self-host this bot as hosting costs aren't feasible.**
+
+See [setup guide - setup.md](setup.md) for guidance on setting this bot up for self-hosting.
 
 
-## Features
+## Usage, Commands & Features
+
+**Command Prefix = "bw!"**
 
 **bw!ping** - Returns my response time in milliseconds.
 
@@ -54,26 +61,31 @@
 
 **bw!quote** - Returns an inspirational quote.
 
+
 ## Future Implementations
 
 **Paginating bw!bookworms list** - Not all the bookworms show, so the fix for that at the moment is bw!profile. The plan is to hopefully paginate bw!bookworms to show the full list.
 
+**Docker Image** - A docker image for simple and easy deployment should exist.
 
 
-## Authors
-**Iqra Haq** - Student @ Northumbria University, Newcastle upon Tyne, UK.
+## Authors & Contributors
 
-## Credits
-**joezhuang** - Vector Designer (<a href="https://josephzhuangart.wordpress.com/">Joseph Zhuang's Personal Website</a>) via Vecteezy (<a href="https://www.vecteezy.com/vector-art/268526-bookworm-vector">Bookworm Vector by Vecteezy</a>).
+### Iqra Haq - Author - Student @ Northumbria University, Newcastle upon Tyne, UK.
+
+**livkx** - Contributions/Bugfixes
+
+
+## Credits & Acknowledgments
+ **joezhuang** - Vector Designer @ Vecteezy (
+<a href="https://www.vecteezy.com/free-vector/school">School Vectors by Vecteezy</a> ).
 
  **dwyl** - Quotes via ( <a href="https://github.com/dwyl/quotes">Github</a> ).
  
  **New York Public Library** - No Book Cover Image via ( <a href="https://www.nypl.org/blog/2014/09/03/generative-ebook-covers">nypl.org</a> ).
 
+ **The Rainbow Mosque** - For inspiring me to create this bot.
+
+
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
-
-## Acknowledgments
-**The Rainbow Mosque** - For inspiring me to create this bot.
-
