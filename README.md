@@ -28,7 +28,6 @@
 
 See [setup guide - setup.md](setup.md) for guidance on setting this bot up for self-hosting.
 
-
 ## Usage, Commands & Features
 
 **Command Prefix = "bw!"**
@@ -61,20 +60,17 @@ See [setup guide - setup.md](setup.md) for guidance on setting this bot up for s
 
 **bw!quote** - Returns an inspirational quote.
 
-
 ## Future Implementations
 
 **Paginating bw!bookworms list** - Not all the bookworms show, so the fix for that at the moment is bw!profile. The plan is to hopefully paginate bw!bookworms to show the full list.
 
 **Docker Image** - A docker image for simple and easy deployment should exist.
 
-
 ## Authors & Contributors
 
 ### Iqra Haq - Author - Student @ Northumbria University, Newcastle upon Tyne, UK.
 
 **livkx** - Contributions/Bugfixes
-
 
 ## Credits & Acknowledgments
  **joezhuang** - Vector Designer @ Vecteezy (
@@ -85,7 +81,6 @@ See [setup guide - setup.md](setup.md) for guidance on setting this bot up for s
  **New York Public Library** - No Book Cover Image via ( <a href="https://www.nypl.org/blog/2014/09/03/generative-ebook-covers">nypl.org</a> ).
 
  **The Rainbow Mosque** - For inspiring me to create this bot.
-
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
