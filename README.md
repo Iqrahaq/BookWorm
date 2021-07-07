@@ -20,7 +20,6 @@
 </p>
 
 <p align="center">BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
-<p align="center">DISCLAIMER: I am currently prioritising my University degree but feel free to message any issues and I will get back to you when I can.</p>
 
 ## Getting Started
 
