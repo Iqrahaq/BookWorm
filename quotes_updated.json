@@ -1,0 +1,34 @@
+[
+  {
+    "quotee": "Maya Angelou",
+    "profession": "Poet & Civil Rights Activist",
+    "image": "",
+    "quotes": {
+      "01": {
+        "source": "",
+        "quote": "There is no greater agony than bearing an untold story inside you.",
+        "year": ""
+      }     
+  },
+  {
+    "quotee": "Jane Austen",
+    "profession": "Novelist",
+    "image": "",
+    "quotes": {
+      "01": {
+        "source": "Pride and Prejudice",
+        "quote": "Angry people are not always wise.",
+        "year": ""
+      },
+        "02": {
+        "source": "Persuasion",
+        "quote": "Let us never underestimate the power of a well-written letter.",
+        "year": ""
+      },
+        "03": {
+        "source": "Persuasion",
+        "quote": "Let us never underestimate the power of a well-written letter.",
+        "year": ""
+      }
+  },
+]
