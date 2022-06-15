@@ -3,32 +3,27 @@
     "quotee": "Maya Angelou",
     "profession": "Poet & Civil Rights Activist",
     "image": "",
-    "quotes": {
-      "01": {
-        "source": "",
-        "quote": "There is no greater agony than bearing an untold story inside you.",
-        "year": ""
-      }     
+    "quotes": [
+      "There is no greater agony than bearing an untold story inside you.",
+     ]    
   },
   {
     "quotee": "Jane Austen",
     "profession": "Novelist",
     "image": "",
     "quotes": {
-      "01": {
-        "source": "Pride and Prejudice",
-        "quote": "Angry people are not always wise.",
-        "year": ""
+      "Pride and Prejudice": [
+        "Angry people are not always wise.",
+        "I have the highest respect for your nerves, they are my old friends."
+      ]
       },
         "02": {
         "source": "Persuasion",
         "quote": "Let us never underestimate the power of a well-written letter.",
-        "year": ""
       },
         "03": {
-        "source": "Persuasion",
-        "quote": "Let us never underestimate the power of a well-written letter.",
-        "year": ""
+        "source": "Pride and Prejudice",
+        "quote": ,
       }
   },
 ]
