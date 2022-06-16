@@ -67,7 +67,7 @@ See [setup guide - setup.md](setup.md) for guidance on setting this bot up for s
 
 ## Authors & Contributors
 
-### Iqra Haq - Author - Student @ Northumbria University, Newcastle upon Tyne, UK.
+### Iqra Haq - Author - CyberSec Analyst, Newcastle upon Tyne, UK.
 
 **livkx** - Contributions/Bugfixes
 
