@@ -130,12 +130,13 @@ class Bot(commands.Cog):
     # Answers with a random quote - using quotes.json.
     @commands.command()
     async def quote(self, ctx):
-        with open(os.path.dirname(__file__) + '/../../quotes.json', 'r') as quotes_file:
+        with open(os.path.dirname(__file__) + '/../../quotes_updated.json', 'r') as quotes_file:
             quotes = json.load(quotes_file)
             responses = quotes
             random.seed(a=None)
             response = random.choice(responses)
-        await ctx.send(response["text"] + ' - ' + response["author"])
+            print(response)
+        ##await ctx.send(response["text"] + ' - ' + response["author"])
 
         
     #######   TROUBLESHOOTING AND INFORMATION ########
