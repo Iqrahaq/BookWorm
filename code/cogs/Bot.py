@@ -12,6 +12,9 @@ import json
 import asyncio
 
 ROLE = "Book Worm"
+quotee = ""
+selected_source = ""
+final_quote = ""
 
 def initdb():
     return mysql.connector.connect(
@@ -130,13 +133,28 @@ class Bot(commands.Cog):
     # Answers with a random quote - using quotes.json.
     @commands.command()
     async def quote(self, ctx):
-        with open(os.path.dirname(__file__) + '/../../quotes_updated.json', 'r') as quotes_file:
+        ## Get Quote Information
+        with open(os.path.dirname(__file__) + '/../quotes_updated.json', 'r') as quotes_file:
             quotes = json.load(quotes_file)
-            responses = quotes
             random.seed(a=None)
-            response = random.choice(responses)
-            print(response)
-        ##await ctx.send(response["text"] + ' - ' + response["author"])
+            quotee = random.choice(quotes["quoteesArray"])
+
+            if isinstance(quotee["quotes"], dict):
+                selected_source = random.choice(list(quotee["quotes"]))
+                final_quote = random.choice(quotee["quotes"][selected_source])
+            else:
+                final_quote = random.choice(quotee["quotes"])
+        
+        ## Create Embed
+        quotee_name = quotee["quotee"]
+        quotee_profession = quotee["profession"]
+        quote_image = quotee["image"]
+
+        embed = discord.Embed(colour=discord.Colour.green())
+        embed = discord.Embed(title='{0} - {1}'.format(final_quote, quotee_name),
+                                description='{0}'.format(selected_source))
+        embed.set_thumbnail(url=quote_image)
+        await ctx.send(embed=embed)
 
         
     #######   TROUBLESHOOTING AND INFORMATION ########

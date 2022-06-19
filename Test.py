@@ -7,7 +7,7 @@ selected_source = ""
 final_quote = ""
 
 ## Get Quote Information
-with open(os.path.dirname(__file__) + '/../../quotes_updated.json', 'r') as quotes_file:
+with open(os.path.dirname(__file__) + '/../quotes_updated.json', 'r') as quotes_file:
     quotes = json.load(quotes_file)
     random.seed(a=None)
     quotee = random.choice(quotes["quoteesArray"])
