@@ -1,25 +1,29 @@
 # Bot.py
 
+from email.quoprimime import quote
+from urllib.request import urlretrieve
 import discord
 from discord.ext import commands
 from discord.utils import get
 import os
 import mysql.connector
-import isbnlib
 from isbnlib import *
+from dotenv import *
 import random
 import json
 import asyncio
+import urllib
+from colorthief import ColorThief
+
+
+load_dotenv()
 
 ROLE = "Book Worm"
-quotee = ""
-selected_source = ""
-final_quote = ""
 
 def initdb():
     return mysql.connector.connect(
         host = os.getenv('HOST'),
-        user = os.getenv('USER'),
+        user = os.getenv('USERNAME'),
         password = os.getenv('PASSWORD'),
         database = os.getenv('DATABASE')
     )
@@ -133,10 +137,14 @@ class Bot(commands.Cog):
     # Answers with a random quote - using quotes.json.
     @commands.command()
     async def quote(self, ctx):
+
+        quotee = ""
+        selected_source = ""
+        final_quote = ""
+
         ## Get Quote Information
-        with open(os.path.dirname(__file__) + '/../quotes_updated.json', 'r') as quotes_file:
+        with open(os.path.dirname(__file__) + '/../../quotes/quotes.json', 'r') as quotes_file:
             quotes = json.load(quotes_file)
-            random.seed(a=None)
             quotee = random.choice(quotes["quoteesArray"])
 
             if isinstance(quotee["quotes"], dict):
@@ -148,12 +156,41 @@ class Bot(commands.Cog):
         ## Create Embed
         quotee_name = quotee["quotee"]
         quotee_profession = quotee["profession"]
-        quote_image = quotee["image"]
+        quotee_image = quotee["image"]
 
-        embed = discord.Embed(colour=discord.Colour.green())
-        embed = discord.Embed(title='{0} - {1}'.format(final_quote, quotee_name),
-                                description='{0}'.format(selected_source))
-        embed.set_thumbnail(url=quote_image)
+        selected_source_name = (selected_source.split("|")[0]).strip()
+        selected_source_isbn = (selected_source.split("|")[-1]).strip()
+        
+
+        embed = discord.Embed(title=selected_source_name,
+                                description="*`{0}`*".format(final_quote))
+        embed.set_author(name=quotee_name, icon_url=quotee_image)
+        if "thumbnail" in cover(selected_source_isbn):
+            quote_bookcover = cover(selected_source_isbn)["thumbnail"]
+            urlretrieve(quote_bookcover, 'tmp.jpg')
+            embed.set_thumbnail(url=quote_bookcover)
+
+            color_thief = ColorThief('tmp.jpg')
+            dominant_color = color_thief.get_color(quality=5)
+            
+            color_int = dominant_color[0] << 16 | dominant_color[1] << 8 | dominant_color[2]
+
+            embed.color = color_int
+
+            os.remove('tmp.jpg')
+
+        else:
+            embed.set_thumbnail(url=quotee_image)
+            urlretrieve(quotee_image, 'tmp.jpg')
+            color_thief = ColorThief('tmp.jpg')
+            dominant_color = color_thief.get_color(quality=5)
+            
+            color_int = dominant_color[0] << 16 | dominant_color[1] << 8 | dominant_color[2]
+
+            embed.color = color_int
+
+            os.remove('tmp.jpg')
+        embed.set_footer(text=quotee_profession)
         await ctx.send(embed=embed)
 
         
@@ -199,7 +236,7 @@ class Bot(commands.Cog):
         embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book club.', inline=False)
         embed.add_field(name='bw!mybooks', value='Returns a list of all the books you\'ve read.', inline=False)
         embed.add_field(name='bw!allbooks', value='Returns a list of all the books that have been read in the club.', inline=False)
-        embed.add_field(name='bw!quote', value='Returns an inspirational quote.', inline=False)
+        embed.add_field(name='bw!quote', value='Returns an inspirational or book inspired quote.', inline=False)
         embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
         embed.set_footer(text="© Iqra Haq (BuraWolf#1158)")
         await ctx.send(embed=embed)

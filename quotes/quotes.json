@@ -3,17 +3,19 @@
         {
             "quotee": "Maya Angelou",
             "profession": "Poet & Civil Rights Activist",
-            "image": "",
-            "quotes": [
-                "There is no greater agony than bearing an untold story inside you."
-            ]
+            "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3R-pMa3ZwjBk45-3H6xkCwVhYwqD8QYEcMHY3S3D6B2lXnaiowNj-wh1fHjUzOXVVmtY&usqp=CAU",
+            "quotes": {
+                "Maya Angelou": [
+                    "There is no greater agony than bearing an untold story inside you."
+                ]
+            }
         },
         {
             "quotee": "Jane Austen",
             "profession": "Novelist",
-            "image": "",
+            "image": "https://cdn.britannica.com/12/172012-050-A9AFF8AF/Jane-Austen-Cassandra-engraving-portrait-1810.jpg?w=400&h=300&c=crop",
             "quotes": {
-                "Emma": [
+                "Emma | 9780141192475": [
                     "Silly things do cease to be silly if they are done by sensible people in an impudent way.",
                     "If I loved you less, I might be able to talk about it more.",
                     "I may have lost my heart, but not my self-control. ",
@@ -33,7 +35,7 @@
                     "Evil to some is always good to others",
                     "It is very difficult for the prosperous to be humble."
                 ],
-                "Pride and Prejudice": [
+                "Pride and Prejudice | 9780141040349": [
                     "I declare after all there is no enjoyment like reading! How much sooner one tires of any thing than of a book! -- When I have a house of my own, I shall be miserable if I have not an excellent library.",
                     "A lady's imagination is very rapid; it jumps from admiration to love, from love to matrimony in a moment.",
                     "In vain have I struggled. It will not do. My feelings will not be repressed. You must allow me to tell you how ardently I admire and love you.",
@@ -65,7 +67,7 @@
                     "I do not find it easy to talk to people I don't know.",
                     "There are very few who have heart enough to be really in love without encouragement"
                 ],
-                "Persuasion": [
+                "Persuasion | 9780141197692": [
                     "I hate to hear you talk about all women as if they were fine ladies instead of rational creatures. None of us want to be in calm waters all our lives.",
                     "You pierce my soul. I am half agony, half hope...I have loved none but you.",
                     "There could have been no two hearts so open, no tastes so similar, no feelings so in unison",
@@ -73,7 +75,7 @@
                     "Let us never underestimate the power of a well-written letter.",
                     "When any two young people take it into their heads to marry, they are pretty sure by perseverance to carry their point, be they ever so poor, or ever so imprudent, or ever so little likely to be necessary to each other's ultimate comfort."            
                 ],
-                "Mansfield Park": [
+                "Mansfield Park | 9780141197708": [
                     "Life seems but a quick succession of busy nothings.",
                     "We have all a better guide in ourselves, if we would attend to it, than any other person can be.",
                     "Selfishness must always be forgiven you know, because there is no hope of a cure.",
@@ -87,7 +89,7 @@
                     "I have no talent for certainty.",
                     "Of course I love her, but there are as many forms of love as there are moments in time."
                 ],
-                "Northanger Abbey": [
+                "Northanger Abbey | 9780141197715": [
                     "The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.",
                     "There is nothing I would not do for those who are really my friends. I have no notion of loving people by halves, it is not my nature.",
                     "It is only a novel... or, in short, only some work in which the greatest powers of the mind are displayed, in which the most thorough knowledge of human nature, the happiest delineation of its varieties, the liveliest effusions of wit and humour, are conveyed to the world in the best-chosen language",
@@ -96,7 +98,7 @@
                     "Friendship is really the finest balm for the pangs of disappointed love.",
                     "What one means one day, you know, one may not mean the next. Circumstances change, opinions alter."
                 ],
-                "Sense and Sensibility": [
+                "Sense and Sensibility | 9780141040370": [
                     "The more I know of the world, the more I am convinced that I shall never see a man whom I can really love. I require so much!",
                     "It isn't what we say or think that defines us, but what we do.",
                     "If I could but know his heart, everything would become easy.",
@@ -130,19 +132,9 @@
         {
             "quotee": "Taylor Jenkins Reid",
             "profession": "Author",
-            "image": "",
+            "image": "https://upload.wikimedia.org/wikipedia/commons/1/15/Portrait_of_Taylor_Jekins_Reid.png",
             "quotes": {
-                "The Seven Husbands of Evelyn Hugo": [
-                    "Test"
-                ]
-            }
-        }, 
-        {
-            "quotee": "Taylor Jenkins Reid",
-            "profession": "Author",
-            "image": "",
-            "quotes": {
-                "The Seven Husbands of Evelyn Hugo": [
+                "The Seven Husbands of Evelyn Hugo | 9781501139239": [
                     "And just as she was about to leave the mircophone, she said 'And to anyone tempted to kiss the TV tonight, please don't chip your tooth.",
                     "Celia may have left me in a huff, but it was a death by a thousand cuts. I hurt her with these tiny scratches, day after day. And then I got surprised when it left a wound too big to heal.",
                     "People think that intimacy is about sex. But intimacy is about truth. When you realize you can tell someone your truth, when you can show yourself to them, when you stand in front of them bare and their response is 'you're safe with me'- that's intimacy.",

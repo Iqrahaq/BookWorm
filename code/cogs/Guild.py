@@ -7,8 +7,11 @@ import os
 import mysql.connector
 import isbnlib
 from isbnlib import *
+from dotenv import *
 import random
 import asyncio
+
+load_dotenv()
 
 ROLE = "Book Worm"
 MEMBERS = {}
@@ -19,7 +22,7 @@ BOOKS_RESULTS = []
 def initdb():
     return mysql.connector.connect(
         host = os.getenv('HOST'),
-        user = os.getenv('USER'),
+        user = os.getenv('USERNAME'),
         password = os.getenv('PASSWORD'),
         database = os.getenv('DATABASE')
     )
