@@ -130,6 +130,51 @@
             }
         },
         {
+            "quotee": "Elizabeth Gilbert",
+            "profession": "Journalist & Author",
+            "image": "https://media2.westword.com/den/imager/u/magnum/13979118/24130.jpg?cb=1651181071",
+            "quotes": {
+                "Eat, Pray, Love | 9780747585664": [
+                    "This is a good sign, having a broken heart. It means we have tried for something.",
+                    "You’re wishin’ too much, baby. You gotta stop wearing your wishbone where your backbone oughtta be.",
+                    "To lose balance sometimes for love is part of living a balanced life.",
+                    "Your emotions are the slaves to your thoughts, and you are the slave to your emotions.",
+                    "I think I deserve something beautiful.",
+                    "Do not apologize for crying. Without this emotion, we are only robots.",
+                    "In desperate love, we always invent the characters of our partners, demanding they be what we need of them, and then feeling devastated when they refuse to perform the role we created in the first place.",
+                    "There’s a crack (or cracks) in everyone…that’s how the light of God gets in.",
+                    "The only thing more unthinkable than leaving was staying; the only thing more impossible than staying was leaving.",
+                    "It all goes away. Eventually, everything goes away.",
+                    "I'm choosing happiness over suffering, I know I am. I'm making space for the unknown future to fill up my life with yet-to-come surprises.",
+                    "In the end, though, maybe we must all give up trying to pay back the people in this world who sustain our lives. In the end, maybe it's wiser to surrender before the miraculous scope of human generosity and to just keep saying thank you, forever and sincerely, for as long as we have voices.",
+                    "Some days are meant to be counted, others are meant to be weighed.",
+                    "At some point, you gotta let go, and sit still, and allow contentment to come to you.",
+                    "I am a better person when I have less on my plate.",
+                    "Ruin is a gift. Ruin is the road to transformation.",
+                    "We don't realize that, somewhere within us all, there does exist a supreme self who is eternally at peace.",
+                    "When the karma of a relationship is done, only love remains. It's safe. Let go.",
+                    "That’s the thing about a human life-there’s no control group, no way to ever know how any of us would have turned out if any variables had been changed."
+                ],
+                "The Signature of All Things | 9781408841891": [
+                    "I would like to spend the rest of my days in a place so silent–and working at a pace so slow–that I would be able to hear myself living.",
+                    "Take me someplace where we can be silent together.",
+                    "There is a level of grief so deep that it stops resembling grief at all. The pain becomes so severe that the body can no longer feel it. The grief cauterizes itself, scars over, prevents inflated feeling. Such numbness is a kind of mercy.",
+                    "Nothing is so essential as dignity… Time will reveal who has it and who has it not.",
+                    "There is a Dutch word, uitwaaien, “to walk against the wind for pleasure.",
+                    "Who loves you most? Who loves you best? Who thinks of you when others rest?",
+                    "Beauty is not required. Beauty is accuracy's distraction.",
+                    "All transformation appears to be motivated by desperation and emergency.",
+                    "Who will ever kiss this encyclopedia of a head?",
+                    "A parent is inexcusable who does not personally teach her child to think.",
+                    "To show a longing for anything that one cannot have, for instance, is not a clever position.",
+                    "She wanted to understand the world, and she made a habit of chasing down information to its last hiding place, as though the fate of nations were at stake in every instance.",
+                    "The beauty and variety of the natural world are merely the visible legacies of endless war.",
+                    "In all of our lives, there are days that we wish we could see expunged from the record of our very existence."
+                ]
+
+            }
+        },
+        {
             "quotee": "Taylor Jenkins Reid",
             "profession": "Author",
             "image": "https://upload.wikimedia.org/wikipedia/commons/1/15/Portrait_of_Taylor_Jekins_Reid.png",
@@ -178,6 +223,19 @@
                     "People think that intimacy is about sex. But intimacy is about truth.",
                     "But accepting that something is true isn't the same as thinking that it is just.",
                     "You do not know how fast you have been running, how hard you have been working, how truly exhausted you are, until someone stands behind you and says,\"It's ok, you can fall down now. I'll catch you.\""
+                ]
+            }
+        },
+        {
+            "quotee": "Tasha Suri",
+            "profession": "Author",
+            "image": "https://images.gr-assets.com/authors/1519360213p5/17718309.jpg",
+            "quotes": {
+                "The Jasmine Throne | 9780356515649": [
+                    "This was what she had needed. Not forgiveness, not a balm for this strange writhing fury inside her, but the promise of someone to care for--to love--that she could not harm. Even if she had to. Even if she tried.",
+                    "After all, power makes everyone monstrous. At least a little.",
+                    "There is power that is showy and fierce. And there is power grown slowly, and stronger for the time spent braiding its ancient strength.",
+                    "Subtlety was cultivated out of necessity, by people who knew that power needed to be treated with care --who understand how easily it could be stolen or taken."
                 ]
             }
         }
