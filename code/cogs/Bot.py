@@ -171,7 +171,7 @@ class Bot(commands.Cog):
             embed.set_thumbnail(url=quote_bookcover)
 
             color_thief = ColorThief('tmp.jpg')
-            dominant_color = color_thief.get_color(quality=5)
+            dominant_color = color_thief.get_color(quality=8)
             
             color_int = dominant_color[0] << 16 | dominant_color[1] << 8 | dominant_color[2]
 
@@ -183,7 +183,7 @@ class Bot(commands.Cog):
             embed.set_thumbnail(url=quotee_image)
             urlretrieve(quotee_image, 'tmp.jpg')
             color_thief = ColorThief('tmp.jpg')
-            dominant_color = color_thief.get_color(quality=5)
+            dominant_color = color_thief.get_color(quality=8)
             
             color_int = dominant_color[0] << 16 | dominant_color[1] << 8 | dominant_color[2]
 
