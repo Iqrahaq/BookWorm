@@ -48,7 +48,7 @@ for filename in os.listdir('./cogs'):
 # Set custom status for bot.
 async def custom_status():
     while True:
-        with open(os.path.dirname(__file__) + '/../books.csv', 'r') as books_file:
+        with open(os.path.dirname(__file__) + '/books.csv', 'r') as books_file:
             books = csv.reader(books_file)
             next(books_file)
             for book in books:
