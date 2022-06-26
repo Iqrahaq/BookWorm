@@ -5,8 +5,40 @@
             "profession": "Poet & Civil Rights Activist",
             "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3R-pMa3ZwjBk45-3H6xkCwVhYwqD8QYEcMHY3S3D6B2lXnaiowNj-wh1fHjUzOXVVmtY&usqp=CAU",
             "quotes": {
+                "I Know Why the Caged Bird Sings | 9780748122349": [
+                    "There is no greater agony than bearing an untold story inside you.",
+                    "Hoping for the best, prepared for the worst, and unsurprised by anything in between.",
+                    "Words mean more than what is set down on paper. It takes the human voice to infuse them with shades of deeper meaning.",
+                    "Anything that works against you can also work for you once you understand the Principle of Reverse.",
+                    "Instead, pursue the things you love doing, and then do them so well that people can't take their eyes off you.",
+                    "Life is going to give you just what you put in it. Put your whole heart in everything you do, and pray, then you can wait.",
+                    "I believe most plain girls are virtuous because of the scarcity of opportunity to be otherwise.",
+                    "If you're for the right thing, you do it without thinking.",
+                    "To be left alone on the tightrope of youthful unknowing is to experience the excruciating beauty of full freedom and the threat of eternal indecision.",
+                    "She comprehended the perversity of life, that in the struggle lies the joy.",
+                    "The quality of strength lined with tenderness is an unbeatable combination, as are intelligence and necessity when unblunted by formal education. ",
+                    "I had given up some youth for knowledge, but my gain was more valuable than the loss.",
+                    "The world had taken a deep breath and was having doubts about continuing to revolve."
+                ], 
                 "Maya Angelou": [
-                    "There is no greater agony than bearing an untold story inside you."
+                    "I've learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.",
+                    "When someone shows you who they are believe them the first time.",
+                    "We delight in the beauty of the butterfly, but rarely admit the changes it has gone through to achieve that beauty.",
+                    "Courage is the most important of all the virtues because without courage, you can't practice any other virtue consistently.",
+                    "I don't trust people who don't love themselves and tell me, 'I love you.' ... There is an African saying which is: Be careful when a naked person offers you a shirt.",
+                    "I did then what I knew how to do. Now that I know better, I do better.",
+                    "Music was my refuge. I could crawl into the space between the notes and curl my back to loneliness.",
+                    "Success is liking yourself, liking what you do, and liking how you do it.",
+                    "My mission in life is not merely to survive, but to thrive; and to do so with some passion, some compassion, some humor, and some style.",
+                    "Have enough courage to trust love one more time and always one more time.",
+                    "Never make someone a priority when all you are to them is an option.",
+                    "You may encounter many defeats, but you must not be defeated. In fact, it may be necessary to encounter the defeats, so you can know who you are, what you can rise from, how you can still come out of it.",
+                    "You can only become truly accomplished at something you love. Don’t make money your goal. Instead pursue the things you love doing and then do them so well that people can’t take their eyes off of you.",
+                    "Try to be a rainbow in someone's cloud.",
+                    "You alone are enough. You have nothing to prove to anybody.",
+                    "The desire to reach for the stars is ambitious. The desire to reach hearts is wise.",
+                    "If I am not good to myself, how can I expect anyone else to be good to me?",
+                    "You may shoot me with your words, you may cut me with your eyes, you may kill me with your hatefulness, but still, like air, I'll rise!"
                 ]
             }
         },
@@ -155,6 +187,15 @@
                     "When the karma of a relationship is done, only love remains. It's safe. Let go.",
                     "That’s the thing about a human life-there’s no control group, no way to ever know how any of us would have turned out if any variables had been changed."
                 ],
+                "City of Girls | 9781408867044": [
+                    "You must learn in life to take things more lightly, my dear. The world is always changing. Learn how to allow for it.",
+                    "Let us not become so cautious that we forget to live.",
+                    "Life is short and difficult, people. We must take our pleasures where we can find them. Let us not become so cautious that we forget to live.",
+                    "The world just happens to you sometimes, is what I think. And people just gotta keep moving through it, best they can.",
+                    "Nothing will uproot your life more violently than true love—at least as far as I’ve always witnessed.",
+                    "I only meant that there was a place within my imagination so fathomlessly deep that the light of the real world could never touch it.",
+                    "Sometimes it's just true that other people have better ideas for your life than you do."
+                ],
                 "The Signature of All Things | 9781408841891": [
                     "I would like to spend the rest of my days in a place so silent–and working at a pace so slow–that I would be able to hear myself living.",
                     "Take me someplace where we can be silent together.",
@@ -172,6 +213,38 @@
                     "In all of our lives, there are days that we wish we could see expunged from the record of our very existence."
                 ]
 
+            }
+        },
+        {
+            "quotee": "Khaled Hosseini",
+            "profession": "Novelist",
+            "image": "https://images.gr-assets.com/authors/1359753468p5/569.jpg",
+            "quotes": {
+                "A Thousand Splendid Suns | 978-1526604750": [
+                    "Marriage can wait, education cannot.",
+                    "One could not count the moons that shimmer on her roofs, or the thousand splendid suns that hide behind her walls.",
+                    "Of all the hardships a person had to face, none was more punishing than the simple act of waiting.",
+                    "A society has no chance of success if its women are uneducated...",
+                    "A man's heart is a wretched, wretched thing. It isn't like a mother's womb. It won't bleed. It won't stretch to make room for you.",
+                    "I will follow you to the ends of the world.",
+
+
+                ],
+                "The Kite Runner | 978-1408824856": [
+                    "For you, a thousand times over.",
+                    "It may be unfair, but what happens in a few days, sometimes even a single day, can change the course of a whole lifetime...",
+                    "And that's the thing about people who mean everything they say. They think everyone else does too.",
+                    "There is only one sin. and that is theft... when you tell a lie, you steal someones right to the truth.",
+                    "It always hurts more to have and lose than to not have in the first place.",
+                    "I wondered if that was how forgiveness budded; not with the fanfare of epiphany, but with pain gathering its things, packing up, and slipping away unannounced in the middle of the night.",
+                    "There is a way to be good again...",
+                    "People say that eyes are windows to the soul.",
+                    "Time can be a greedy thing-sometimes it steals the details for itself.",
+                    "A man who has no conscience, no goodness, does not suffer.",
+                    "It's wrong what they say about the past, I've learned, about how you can bury it. Because the past claws its way out.",
+                    "But better to get hurt by the truth than comforted with a lie.",
+                    "Children aren't coloring books. You don't get to fill them with your favorite colors."
+                ]
             }
         },
         {
@@ -237,6 +310,32 @@
                     "There is power that is showy and fierce. And there is power grown slowly, and stronger for the time spent braiding its ancient strength.",
                     "Subtlety was cultivated out of necessity, by people who knew that power needed to be treated with care --who understand how easily it could be stolen or taken."
                 ]
+            }
+        },
+        {
+            "quotee": "Virginia Woolf",
+            "profession": "Writer",
+            "image": "https://booksonthewall.com/wp-content/uploads/2017/08/617px-Virginia_Woolf_1927.jpg",
+            "quotes": {
+                "A Room of One's Own | 9780141183534": [
+                    "Lock up your libraries if you like; but there is no gate, no lock, no bolt that you can set upon the freedom of my mind.",
+                    "One cannot think well, love well, sleep well, if one has not dined well.",
+                    "No need to hurry. No need to sparkle. No need to be anybody but oneself."
+                ],
+                "Between the Acts | 9780586044438": [
+                    "Books are the mirrors of the soul."
+                ],
+                "Orlando | 9780241284643": [
+                    "All extremes of feeling are allied with madness."
+                ],
+                "Virginia Woolf": [
+                    "If you do not tell the truth about yourself you cannot tell it about other people.",
+                    "The eyes of others our prisons; their thoughts our cages.",
+                    "Growing up is losing some illusions, in order to acquire others.",
+                    "I am rooted, but I flow.",
+                    "The truth is, I often like women. I like their unconventionality. I like their completeness. I like their anonymity."
+                ]
+
             }
         }
     ]
