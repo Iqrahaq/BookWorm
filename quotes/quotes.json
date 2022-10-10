@@ -43,6 +43,16 @@
             }
         },
         {
+            "quotee": "Charles Addams",
+            "profession": "Cartoonist",
+            "image": "https://m.media-amazon.com/images/I/51CRjiU3czL.jpg",
+            "quotes": {
+                "The Addams Family: An Evilution | 9780764953880": [
+                    "Normal is an illusion. What is normal for the spider is chaos for the fly."
+                ]
+            }
+        },
+        {
             "quotee": "Jane Austen",
             "profession": "Novelist",
             "image": "https://cdn.britannica.com/12/172012-050-A9AFF8AF/Jane-Austen-Cassandra-engraving-portrait-1810.jpg?w=400&h=300&c=crop",
