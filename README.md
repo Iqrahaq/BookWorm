@@ -57,7 +57,7 @@ See [setup guide - setup.md](setup.md) for guidance on setting this bot up for s
 
 **bw!allbooks** - Returns a list of all the books that have been read in the club.
 
-**bw!quote** - Returns an inspirational quote.
+**bw!quote** - Returns an inspirational or book inspired quote.
 
 ## Future Implementations
 
