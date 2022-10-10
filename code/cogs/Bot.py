@@ -141,9 +141,11 @@ class Bot(commands.Cog):
         quotee = ""
         selected_source = ""
         final_quote = ""
+        
+        random_quote_file = random.choice(os.listdir('/home/bookworm/quotes'))
 
         ## Get Quote Information
-        with open(os.path.dirname(__file__) + '/../../quotes/quotes.json', 'r') as quotes_file:
+        with open('/home/bookworm/quotes/' + random_quote_file, 'r') as quotes_file:
             quotes = json.load(quotes_file)
             quotee = random.choice(quotes["quoteesArray"])
 
