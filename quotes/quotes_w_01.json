@@ -1,0 +1,32 @@
+{
+    "quoteesArray": [
+        {
+            "quotee": "Virginia Woolf",
+            "profession": "Writer",
+            "image": "https://booksonthewall.com/wp-content/uploads/2017/08/617px-Virginia_Woolf_1927.jpg",
+            "quotes": {
+                "A Room of One's Own | 9780141183534": [
+                    "Lock up your libraries if you like; but there is no gate, no lock, no bolt that you can set upon the freedom of my mind.",
+                    "One cannot think well, love well, sleep well, if one has not dined well.",
+                    "No need to hurry. No need to sparkle. No need to be anybody but oneself."
+                ],
+                "Between the Acts | 9780586044438": [
+                    "Books are the mirrors of the soul."
+                ],
+                "Orlando | 9780241284643": [
+                    "All extremes of feeling are allied with madness."
+                ],
+                "Virginia Woolf": [
+                    "If you do not tell the truth about yourself you cannot tell it about other people.",
+                    "The eyes of others our prisons; their thoughts our cages.",
+                    "Growing up is losing some illusions, in order to acquire others.",
+                    "I am rooted, but I flow.",
+                    "The truth is, I often like women. I like their unconventionality. I like their completeness. I like their anonymity."
+                ]
+
+            }
+        }
+    ]
+}
+
+  
