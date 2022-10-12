@@ -40,7 +40,7 @@ async def on_command_error(ctx, error):
     traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 # Load cogs
-for filename in os.listdir('./cogs'):
+for filename in os.listdir('/home/bookworm/code/cogs'):
     if filename.endswith('.py'):
         client.load_extension(f'cogs.{filename[:-3]}')
 
@@ -59,10 +59,17 @@ async def custom_status():
                     await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.listening, name=" the Audio Book: '{0}' by {1}. 🎧".format(book_name, book_authors)))
                     await asyncio.sleep(15000)
 
+async def daily_quote(ctx):
+    while True:
+        quote_command = client.get_command("post_daily_quote")
+        await ctx.invoke(quote_command)
+        await asyncio.sleep(5)
+
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
     client.loop.create_task(custom_status())
+    client.loop.create_task(daily_quote())
 
 # token
 client.run(TOKEN, reconnect=True)
