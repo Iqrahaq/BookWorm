@@ -1,7 +1,7 @@
 # main.py
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
 import sys
 from dotenv import load_dotenv
@@ -44,32 +44,20 @@ for filename in os.listdir('/home/bookworm/code/cogs'):
     if filename.endswith('.py'):
         client.load_extension(f'cogs.{filename[:-3]}')
 
-
 # Set custom status for bot.
 async def custom_status():
-    while True:
-        with open(os.path.dirname(__file__) + '/../books.csv', 'r') as books_file:
-            books = csv.reader(books_file)
-            next(books_file)
-            for book in books:
-                if any(book):
-                    book_name = book[0]
-                    book_authors = book[1]
-                    book_url = book[5]
-                    await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.listening, name=" the Audio Book: '{0}' by {1}. 🎧".format(book_name, book_authors)))
-                    await asyncio.sleep(15000)
-
-async def daily_quote(ctx):
-    while True:
-        quote_command = client.get_command("post_daily_quote")
-        await ctx.invoke(quote_command)
-        await asyncio.sleep(5)
+    await client.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.listening, name=" an Audio Book. 🎧"))
+                    
+# @tasks.loop(seconds=5)
+# async def daily_quote(ctx):
+#     daily_command = client.get_command(name='post_daily_quote')
+#     await daily_command.callback(ctx)
 
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
-    client.loop.create_task(custom_status())
-    client.loop.create_task(daily_quote())
+    daily_quote.start()
+    await custom_status()
 
 # token
 client.run(TOKEN, reconnect=True)

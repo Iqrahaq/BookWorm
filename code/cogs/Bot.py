@@ -12,11 +12,11 @@ from isbnlib import *
 from dotenv import *
 import random
 import json
-import asyncio
 import urllib
 from colorthief import ColorThief
 from datetime import datetime, time, timedelta
 import asyncio
+import schedule
 
 load_dotenv()
 
@@ -35,9 +35,9 @@ def initdb():
 
 class Bot(commands.Cog):
     """ a class filled with all commands related to the bot. """
-
     def __init__(self, client):
         self.client = client
+        self.index = 0
         self.connection = initdb()
     
     def dbcursor(self):
@@ -46,6 +46,7 @@ class Bot(commands.Cog):
         except mysql.connector.Error as err:
             self.connection = initdb()
         return self.connection.cursor()
+        
 
     # First command to be run before all other commands (to help with setting up DB and Role).
     @commands.command()
@@ -206,8 +207,6 @@ class Bot(commands.Cog):
     @commands.command()
     async def post_daily_quote(self, ctx):
 
-        await self.client.wait_until_ready() 
-
         mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
@@ -222,6 +221,7 @@ class Bot(commands.Cog):
 
     @commands.command()
     async def daily_quote_setup(self, ctx):
+
         mycursor = self.dbcursor()
         mycursor.execute("SET NAMES utf8mb4;")
         self.connection.commit()
@@ -246,8 +246,7 @@ class Bot(commands.Cog):
             await ctx.send("Response timed out.")
 
         ## End Confirmation
-        await ctx.send("Quotes to be posted in {}.".format(daily_quote_channel))
- 
+        await ctx.send("Quotes to be posted in {}.".format(daily_quote_channel)) 
 
     #######   TROUBLESHOOTING AND INFORMATION ########
 
@@ -273,8 +272,8 @@ class Bot(commands.Cog):
 
     @commands.command()
     async def list_commands(self, ctx):
-        for command in commands:
-            await ctx.send(command)
+        commands = [c.name for c in self.client.commands]
+        await ctx.send(commands)
 
     # Help list and details of commands...
     @commands.command(pass_context=True)
