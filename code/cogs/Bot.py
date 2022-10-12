@@ -3,7 +3,8 @@
 from email.quoprimime import quote
 from urllib.request import urlretrieve
 import discord
-from discord.ext import commands
+from discord.ext import tasks, commands
+from discord.ext.commands import Bot
 from discord.utils import get
 import os
 import mysql.connector
@@ -14,11 +15,15 @@ import json
 import asyncio
 import urllib
 from colorthief import ColorThief
-
+from datetime import datetime, time, timedelta
+import asyncio
 
 load_dotenv()
 
 ROLE = "Book Worm"
+daily_quote_channel = ""
+daily_quote_time = ""
+daily_quote_timezone = ""
 
 def initdb():
     return mysql.connector.connect(
@@ -104,12 +109,12 @@ class Bot(commands.Cog):
     async def booksearch(self, ctx):
         await ctx.send(f'{ctx.author.mention}, what\'s the book called?')
 
-        def check(message):
-            return message.channel == ctx.channel
+        def check(msg):
+            return msg.author == ctx.author and msg.channel == ctx.channel
 
         try:
-            current_message = await self.client.wait_for('message', check=check, timeout=30)
-            book_results = goom(current_message.content)
+            msg = await self.client.wait_for('message', check=check, timeout=30)
+            book_results = goom(msg.content)
             if book_results:
                 book_results_count = len(book_results)
                 embed = discord.Embed(colour=discord.Colour.green(), title="Book Results:")
@@ -136,7 +141,7 @@ class Bot(commands.Cog):
 
     # Answers with a random quote - using quotes.json.
     @commands.command()
-    async def quote(self, ctx):
+    async def quote(self, ctx, *channel):
 
         quotee = ""
         selected_source = ""
@@ -193,9 +198,57 @@ class Bot(commands.Cog):
 
             os.remove('tmp.jpg')
         embed.set_footer(text=quotee_profession)
-        await ctx.send(embed=embed)
+        if not channel:
+            await ctx.send(embed=embed)
+        else:
+            await channel.send(embed=embed)
 
+    @commands.command()
+    async def post_daily_quote(self, ctx):
+
+        await self.client.wait_until_ready() 
+
+        mycursor = self.dbcursor()
+        mycursor.execute("SET NAMES utf8mb4;")
+        self.connection.commit()
+
+        quote_channel_sql = 'SELECT quote_channel FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
+        mycursor.execute(quote_channel_sql)
+        channel_id = str(mycursor.fetchone()[0])
         
+        daily_quote_channel = self.client.get_channel(int(channel_id))
+        
+        await self.quote(daily_quote_channel)
+
+    @commands.command()
+    async def daily_quote_setup(self, ctx):
+        mycursor = self.dbcursor()
+        mycursor.execute("SET NAMES utf8mb4;")
+        self.connection.commit()
+
+        await ctx.send(f"Which channel would you like to post a daily quote in?")
+        def check(msg):
+            return len(msg.channel_mentions) != 0 and msg.channel == ctx.channel and ctx.author == msg.author
+        try:
+            msg = await self.client.wait_for('message', check=check, timeout=30)
+            channel_id = msg.channel_mentions[0].id
+            channel = self.client.get_channel(int(channel_id))
+            if channel:
+                daily_quote_channel = channel
+                update_quote_channel_sql = "UPDATE guilds SET quote_channel = %s WHERE guild_id = %s"
+                val = (channel_id, ctx.guild.id,)
+                mycursor.execute(update_quote_channel_sql, val)
+                self.connection.commit()
+            else:
+                await ctx.send(f"Can't find channel! Please reissue the command and specify a channel that exists.")
+        except asyncio.TimeoutError as e:
+            print(e)
+            await ctx.send("Response timed out.")
+
+        ## End Confirmation
+        await ctx.send("Quotes to be posted in {}.".format(daily_quote_channel))
+ 
+
     #######   TROUBLESHOOTING AND INFORMATION ########
 
 
@@ -218,7 +271,10 @@ class Bot(commands.Cog):
     async def ping(self, ctx):
         await ctx.send(f'Pong! {round(self.client.latency * 1000)}ms ')
 
-
+    @commands.command()
+    async def list_commands(self, ctx):
+        for command in commands:
+            await ctx.send(command)
 
     # Help list and details of commands...
     @commands.command(pass_context=True)
@@ -238,13 +294,14 @@ class Bot(commands.Cog):
         embed.add_field(name='bw!bookfinished', value='Let BookWorm Bot know that you\'ve finished the current set book for book club.', inline=False)
         embed.add_field(name='bw!mybooks', value='Returns a list of all the books you\'ve read.', inline=False)
         embed.add_field(name='bw!allbooks', value='Returns a list of all the books that have been read in the club.', inline=False)
-        embed.add_field(name='bw!quote', value='Returns an inspirational or book inspired quote.', inline=False)
+        embed.add_field(name='bw!quote', value='Returns a book inspired quote.', inline=False)
         embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
-        embed.set_footer(text="© Iqra Haq (BuraWolf#1158)")
+        embed.set_footer(text="© Iqra Haq (BuraWolf)")
         await ctx.send(embed=embed)
 
 
 def setup(client):
     client.add_cog(Bot(client))
+
 
 
