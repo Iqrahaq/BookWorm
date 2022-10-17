@@ -1,6 +1,8 @@
 # Bot.py
 
 from email.quoprimime import quote
+from http import server
+from tracemalloc import start
 from urllib.request import urlretrieve
 import discord
 from discord.ext import tasks, commands
@@ -16,7 +18,6 @@ import urllib
 from colorthief import ColorThief
 from datetime import datetime, time, timedelta
 import asyncio
-import schedule
 
 load_dotenv()
 
@@ -39,7 +40,11 @@ class Bot(commands.Cog):
         self.client = client
         self.index = 0
         self.connection = initdb()
-    
+        self.run_quote.start()
+
+    def cog_unload(self):
+        self.run_quote.cancel()
+
     def dbcursor(self):
         try:
             self.connection.ping(reconnect=True, attempts=3, delay=5)
@@ -199,25 +204,79 @@ class Bot(commands.Cog):
 
             os.remove('tmp.jpg')
         embed.set_footer(text=quotee_profession)
-        if not channel:
-            await ctx.send(embed=embed)
-        else:
+        if channel:
             await channel.send(embed=embed)
+        else:
+            await ctx.send(embed=embed)
 
     @commands.command()
-    async def post_daily_quote(self, ctx):
+    async def post_daily_quote(self):
 
-        mycursor = self.dbcursor()
-        mycursor.execute("SET NAMES utf8mb4;")
-        self.connection.commit()
+        quotee = ""
+        selected_source = ""
+        final_quote = ""
+        
+        random_quote_file = random.choice(os.listdir('/home/bookworm/quotes'))
 
-        quote_channel_sql = 'SELECT quote_channel FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
-        mycursor.execute(quote_channel_sql)
-        channel_id = str(mycursor.fetchone()[0])
+        ## Get Quote Information
+        with open('/home/bookworm/quotes/' + random_quote_file, 'r') as quotes_file:
+            quotes = json.load(quotes_file)
+            quotee = random.choice(quotes["quoteesArray"])
+
+            if isinstance(quotee["quotes"], dict):
+                selected_source = random.choice(list(quotee["quotes"]))
+                final_quote = random.choice(quotee["quotes"][selected_source])
+            else:
+                final_quote = random.choice(quotee["quotes"])
         
-        daily_quote_channel = self.client.get_channel(int(channel_id))
+        ## Create Embed
+        quotee_name = quotee["quotee"]
+        quotee_profession = quotee["profession"]
+        quotee_image = quotee["image"]
+
+        selected_source_name = (selected_source.split("|")[0]).strip()
+        selected_source_isbn = (selected_source.split("|")[-1]).strip()
         
-        await self.quote(daily_quote_channel)
+
+        embed = discord.Embed(title=selected_source_name,
+                                description="*`{0}`*".format(final_quote))
+        embed.set_author(name=quotee_name, icon_url=quotee_image)
+        if "thumbnail" in cover(selected_source_isbn):
+            quote_bookcover = cover(selected_source_isbn)["thumbnail"]
+            urlretrieve(quote_bookcover, 'tmp.jpg')
+            embed.set_thumbnail(url=quote_bookcover)
+
+            color_thief = ColorThief('tmp.jpg')
+            dominant_color = color_thief.get_color(quality=8)
+            
+            color_int = dominant_color[0] << 16 | dominant_color[1] << 8 | dominant_color[2]
+
+            embed.color = color_int
+
+            os.remove('tmp.jpg')
+
+        else:
+            embed.set_thumbnail(url=quotee_image)
+            urlretrieve(quotee_image, 'tmp.jpg')
+            color_thief = ColorThief('tmp.jpg')
+            dominant_color = color_thief.get_color(quality=8)
+            
+            color_int = dominant_color[0] << 16 | dominant_color[1] << 8 | dominant_color[2]
+
+            embed.color = color_int
+
+            os.remove('tmp.jpg')
+        embed.set_footer(text=quotee_profession)
+
+        #BTS
+        channel = channel = self.client.get_channel(761709264631758888)
+        if channel:
+            await channel.send(embed=embed)
+
+        #ASWASA
+        channel = channel = self.client.get_channel(804144223309266964)
+        if channel:
+            await channel.send(embed=embed)
 
     @commands.command()
     async def daily_quote_setup(self, ctx):
@@ -246,10 +305,29 @@ class Bot(commands.Cog):
             await ctx.send("Response timed out.")
 
         ## End Confirmation
-        await ctx.send("Quotes to be posted in {}.".format(daily_quote_channel)) 
+        await ctx.send("Quotes to be posted in {}.".format(daily_quote_channel))
+
+    @commands.command()
+    async def force_daily_quote(self, ctx):
+        mycursor = self.dbcursor()
+        mycursor.execute("SET NAMES utf8mb4;")
+        self.connection.commit()
+
+        quote_channel_sql = 'SELECT quote_channel FROM guilds WHERE guild_id={}'.format(ctx.guild.id)
+        mycursor.execute(quote_channel_sql)
+        channel_id = str(mycursor.fetchone()[0])
+        
+        daily_quote_channel = self.client.get_channel(int(channel_id))
+        
+        await self.quote(daily_quote_channel)
+         
+    @tasks.loop(hours=12)
+    async def run_quote(self):
+        await self.post_daily_quote()
+        self.index += 1
+
 
     #######   TROUBLESHOOTING AND INFORMATION ########
-
 
     # Returns information about bot.
     @commands.command()
@@ -262,8 +340,6 @@ class Bot(commands.Cog):
         embed.add_field(name='How to use?', value='Use the "bw!help" command!', inline=False)
         embed.add_field(name='Am I new?', value='Use the "bw!botsetup" command!', inline=False)
         await ctx.send(embed=embed)
-        
-
 
     # Ping to answer with the ms latency, helpful for troubleshooting.
     @commands.command()
