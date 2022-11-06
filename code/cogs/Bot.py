@@ -274,7 +274,7 @@ class Bot(commands.Cog):
             await channel.send(embed=embed)
 
         #ASWASA
-        channel = channel = self.client.get_channel(804144223309266964)
+        channel = channel = self.client.get_channel(770423654394757130)
         if channel:
             await channel.send(embed=embed)
 
