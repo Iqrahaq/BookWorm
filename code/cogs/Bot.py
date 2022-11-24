@@ -372,7 +372,7 @@ class Bot(commands.Cog):
         embed.add_field(name='bw!quote', value='Returns inspirational / knowledagable quotes linked to books.', inline=False)
         embed.add_field(name='bw!force_daily_quote', value='Returns inspirational / knowledagable quotes linked to books in designated quotes channel.', inline=False)
         embed.set_thumbnail(url='https://raw.githubusercontent.com/Iqrahaq/BookWorm/master/img/bookworm-01.png')
-        embed.set_footer(text="© Iqra Haq (BuraWolf)")
+        embed.set_footer(text="© Iqra Haq (buraw01f)")
         await ctx.send(embed=embed)
 
 
