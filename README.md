@@ -21,7 +21,7 @@
 
 <p align="center">BookWorm Bot is a discord bot that has been designed to streamline book club activities within servers.</p>
 
-## Getting Started
+## Current Status
 
 **This project is now closed and bookworm bot is no longer supported.**
 
