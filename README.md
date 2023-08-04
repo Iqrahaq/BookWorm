@@ -23,9 +23,7 @@
 
 ## Getting Started
 
-**Currently you'll need to self-host this bot as hosting costs aren't feasible.**
-
-See [setup guide - setup.md](setup.md) for guidance on setting this bot up for self-hosting.
+**This project is now closed and bookworm bot is no longer supported**
 
 ## Usage, Commands & Features
 
