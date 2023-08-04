@@ -23,7 +23,7 @@
 
 ## Getting Started
 
-**This project is now closed and bookworm bot is no longer supported**
+**This project is now closed and bookworm bot is no longer supported.**
 
 ## Usage, Commands & Features
 
